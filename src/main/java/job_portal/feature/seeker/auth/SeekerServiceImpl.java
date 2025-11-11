@@ -12,6 +12,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import job_portal.domain.backend.seeker.EmailVerification;
 import job_portal.domain.backend.seeker.Seeker;
+import job_portal.feature.seeker.auth.dto.EmailRequest;
 import job_portal.feature.seeker.auth.dto.RegisterRequest;
 import job_portal.feature.seeker.auth.dto.VerifyRequest;
 import job_portal.mapper.seeker.SeekerMapper;
@@ -34,6 +35,58 @@ public class SeekerServiceImpl implements SeekerService{
     @Value("${spring.mail.username}")
     private String myMail;
 
+
+    @Override
+    public void resentVerify(EmailRequest emailRequest) throws MessagingException{
+
+        Seeker seeker = seekerRepository
+            .findByEmail(emailRequest.email())
+            .orElseThrow(()->
+                new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Email doesn't exist!"
+                )
+            );
+
+        if(Boolean.TRUE.equals(seeker.getIsVerified())){
+            throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "Account already verified!"
+            );
+        }
+
+        EmailVerification emailVerification = emailVerificationRepository
+            .findBySeeker(seeker)
+            .orElseThrow(()->
+                new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Seeker doesn't exits!"
+                )
+            );
+        
+        emailVerification.setVerificationCode(RandomUtil.random6Digits());
+        emailVerification.setExpiryTime(LocalTime.now().plusMinutes(1));
+
+        emailVerificationRepository.save(emailVerification);
+
+        // Step 2. Prepare to send mail
+        String myHtml = String.format("""
+            <h1>JobPortal - Email Verification</h1>
+            <hr/>
+            %s
+            """, emailVerification.getVerificationCode()
+        );
+
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
+        helper.setSubject("Email Verification From JobPortal");
+        helper.setTo(seeker.getEmail());
+        helper.setFrom(myMail);
+        helper.setText(myHtml,true);
+
+        javaMailSender.send(mimeMessage);
+    }
+
     @Override
     public void verify(VerifyRequest verifyRequest) {
 
@@ -55,7 +108,24 @@ public class SeekerServiceImpl implements SeekerService{
                 )
             );
 
-        return;
+        if(!emailVerification.getVerificationCode().equals(verifyRequest.vertificationCode())){
+            throw new ResponseStatusException(
+                HttpStatus.UNAUTHORIZED,
+                "Verification failed!"
+            );
+        }
+
+        if(LocalTime.now().isAfter(emailVerification.getExpiryTime())){
+            throw new ResponseStatusException(
+                HttpStatus.UNAUTHORIZED,
+                "Verification code is expired!"
+            );
+        }
+
+        seeker.setIsVerified(true);
+        seeker.setIsDeleted(false);
+
+        seekerRepository.save(seeker);
     }
 
 

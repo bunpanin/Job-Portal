@@ -27,9 +27,5 @@ public class SeekerWorkExperience {
     private WorkExperience workExperience;
 
     private Boolean isDeleted;
-    private LocalDateTime createdAt;
-
-    private String testing;
-
-    
+    private LocalDateTime createdAt;    
 }

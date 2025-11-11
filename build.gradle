@@ -31,7 +31,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	runtimeOnly 'org.postgresql:postgresql'
-	// ------------ Mapstruct & Lombok --------------
+	// --------- Mapstruct & Lombok -----------
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	compileOnly 'org.mapstruct:mapstruct:1.5.5.Final'
