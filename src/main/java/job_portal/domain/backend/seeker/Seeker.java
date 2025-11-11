@@ -69,6 +69,12 @@ public class Seeker {
     private Boolean isAccountNonLocked;
     private Boolean isCredentialsNonExpired;
     private Boolean isDeleted;
+
+    private Boolean Testing;
     // can i use  role "seeker"
     private String role;
+
+
+
+    
 }
