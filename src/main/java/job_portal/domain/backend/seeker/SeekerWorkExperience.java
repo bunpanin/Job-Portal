@@ -29,5 +29,7 @@ public class SeekerWorkExperience {
     private Boolean isDeleted;
     private LocalDateTime createdAt;
 
+    private String testing;
+
     
 }
