@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+// import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.server.ResponseStatusException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -28,13 +30,17 @@ public class SeekerServiceImpl implements SeekerService{
     private final SeekerRepository seekerRepository;
     private final SeekerMapper seekerMapper;
 
+    private final PasswordEncoder passwordEncoder;
+
     // Mail Config
     private final EmailVerificationRepository emailVerificationRepository;
     private final JavaMailSender javaMailSender;
 
+    // Declare varaible
+    String shortUuid = UUID.randomUUID().toString().replace("-", "").substring(0, 12);
+
     @Value("${spring.mail.username}")
     private String myMail;
-
 
     @Override
     public void resentVerify(EmailRequest emailRequest) throws MessagingException{
@@ -145,8 +151,9 @@ public class SeekerServiceImpl implements SeekerService{
                 "Passwords do not match"
             );
         }
+
         Seeker seeker = seekerMapper.fromRegisterRequest(registerRequest);
-        seeker.setUuid(UUID.randomUUID().toString());
+        seeker.setUuid(registerRequest.fullName() + "-" + shortUuid);
         seeker.setCreatedAt(LocalDateTime.now());
         seeker.setIsVerified(false);
         seeker.setIsBloked(false);
@@ -154,8 +161,9 @@ public class SeekerServiceImpl implements SeekerService{
         seeker.setIsAccountNonLocked(true);
         seeker.setIsCredentialsNonExpired(true);
         seeker.setIsDeleted(true);
+        // seeker.setPassword(passwordEncoder.encode(registerRequest.password()));
+        seeker.setPassword(passwordEncoder.encode(seeker.getPassword()));
         seeker.setRole("seeker");
-        
         seekerRepository.save(seeker);
 
         EmailVerification emailVerification = new EmailVerification();

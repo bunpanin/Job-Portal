@@ -1,4 +1,5 @@
 package job_portal.feature.seeker.auth.dto;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -8,6 +9,7 @@ public record RegisterRequest(
     @Size(max = 100, message = "Name must be less than 100 charaters")
     String fullName,
     @NotBlank(message = "Email is required!")
+    @Email(message = "Email must be a valid address!")
     String email,
     @NotBlank(message = "Password is required!")
     @Pattern(
