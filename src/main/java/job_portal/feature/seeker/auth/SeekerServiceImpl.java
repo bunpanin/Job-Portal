@@ -1,6 +1,8 @@
 package job_portal.feature.seeker.auth;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -12,9 +14,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import job_portal.domain.backend.Role;
+import job_portal.domain.backend.RoleRepository;
 import job_portal.domain.backend.seeker.EmailVerification;
 import job_portal.domain.backend.seeker.Seeker;
 import job_portal.feature.seeker.auth.dto.EmailRequest;
+import job_portal.feature.seeker.auth.dto.JwtRespone;
+import job_portal.feature.seeker.auth.dto.LoginRequest;
 import job_portal.feature.seeker.auth.dto.RegisterRequest;
 import job_portal.feature.seeker.auth.dto.VerifyRequest;
 import job_portal.mapper.seeker.SeekerMapper;
@@ -32,6 +38,10 @@ public class SeekerServiceImpl implements SeekerService{
 
     private final PasswordEncoder passwordEncoder;
 
+    private final RoleRepository roleRepository;
+
+    // private final DaoAuthenticationProvider daoAuthenticationProvider;
+
     // Mail Config
     private final EmailVerificationRepository emailVerificationRepository;
     private final JavaMailSender javaMailSender;
@@ -41,6 +51,21 @@ public class SeekerServiceImpl implements SeekerService{
 
     @Value("${spring.mail.username}")
     private String myMail;
+
+    
+    @Override
+    public JwtRespone login(LoginRequest loginRequest) {
+
+        // Authenticator auth = new UsernamePasswordAuthenticationToken(
+        //     loginRequest.email(),
+        //     loginRequest.password()
+        // );
+        
+        // auth = daoAuthenticationProvider.authenticate(auth);
+        
+        return null;
+    }
+
 
     @Override
     public void resentVerify(EmailRequest emailRequest) throws MessagingException{
@@ -163,7 +188,10 @@ public class SeekerServiceImpl implements SeekerService{
         seeker.setIsDeleted(true);
         // seeker.setPassword(passwordEncoder.encode(registerRequest.password()));
         seeker.setPassword(passwordEncoder.encode(seeker.getPassword()));
-        seeker.setRole("seeker");
+        
+        List<Role> roles = new ArrayList<>();
+        roles.add(roleRepository.findById(1).orElseThrow());
+        seeker.setRoles(roles);
         seekerRepository.save(seeker);
 
         EmailVerification emailVerification = new EmailVerification();
@@ -190,7 +218,6 @@ public class SeekerServiceImpl implements SeekerService{
 
         javaMailSender.send(mimeMessage);
     }
-
 }
 
 
