@@ -10,6 +10,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,6 +20,8 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 @Entity
+@Builder
+@AllArgsConstructor
 @Table(name = "job_levels")
 public class JobLevel {
     @Id
@@ -27,7 +31,7 @@ public class JobLevel {
     private String alias;
     @Column(nullable = false, unique = true, length = 25)
     private String name; 
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(columnDefinition = "TEXT")
     private String description;
     
     private Boolean isDeleted;
@@ -41,8 +45,4 @@ public class JobLevel {
     @OneToMany(mappedBy = "jobLevel")
     private List<WorkExperience> workExperiences;
 
-
-
-
-    
 }

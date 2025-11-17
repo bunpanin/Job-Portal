@@ -1,71 +1,210 @@
 package job_portal.feature.seeker.auth;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-// import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.server.ResponseStatusException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import job_portal.domain.backend.Role;
 import job_portal.domain.backend.RoleRepository;
 import job_portal.domain.backend.seeker.EmailVerification;
+import job_portal.domain.backend.seeker.JobLevel;
 import job_portal.domain.backend.seeker.Seeker;
+import job_portal.feature.seeker.auth.dto.DataRespone;
 import job_portal.feature.seeker.auth.dto.EmailRequest;
 import job_portal.feature.seeker.auth.dto.JwtRespone;
 import job_portal.feature.seeker.auth.dto.LoginRequest;
 import job_portal.feature.seeker.auth.dto.RegisterRequest;
+import job_portal.feature.seeker.auth.dto.SeekerDataRespone;
+import job_portal.feature.seeker.auth.dto.SeekerUpdateRequest;
 import job_portal.feature.seeker.auth.dto.VerifyRequest;
 import job_portal.mapper.seeker.SeekerMapper;
+import job_portal.util.MailHtmlUtil;
 import job_portal.util.RandomUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.oauth2.jwt.JwtClaimsSet;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
+import org.springframework.security.oauth2.jwt.Jwt;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j 
-public class SeekerServiceImpl implements SeekerService{
+public class SeekerServiceImpl implements SeekerService {
 
     private final SeekerRepository seekerRepository;
     private final SeekerMapper seekerMapper;
-
     private final PasswordEncoder passwordEncoder;
-
     private final RoleRepository roleRepository;
-
-    // private final DaoAuthenticationProvider daoAuthenticationProvider;
+    private final JobLevelRepository jobLevelRepository;
+    private final AuthenticationManager authProvider;
 
     // Mail Config
     private final EmailVerificationRepository emailVerificationRepository;
-    private final JavaMailSender javaMailSender;
 
-    // Declare varaible
-    String shortUuid = UUID.randomUUID().toString().replace("-", "").substring(0, 12);
+    private final JavaMailSender javaMailSender;
+    private final JwtEncoder jwtEncoder;
+    private JwtEncoder jwtEncoderRefreshToken;
+
+    private final String TOKEN_TYPE = "Bearer";
 
     @Value("${spring.mail.username}")
     private String myMail;
 
-    
-    @Override
-    public JwtRespone login(LoginRequest loginRequest) {
-
-        // Authenticator auth = new UsernamePasswordAuthenticationToken(
-        //     loginRequest.email(),
-        //     loginRequest.password()
-        // );
-        
-        // auth = daoAuthenticationProvider.authenticate(auth);
-        
-        return null;
+    @Autowired
+    @org.springframework.beans.factory.annotation.Qualifier("jwtEncoderRefreshToken")
+    public void setJwtEncoderRefreshToken(JwtEncoder jwtEncoderRefreshToken) {
+        this.jwtEncoderRefreshToken = jwtEncoderRefreshToken;
     }
 
+    @Override
+    public SeekerDataRespone updateByUuid(String uuid, SeekerUpdateRequest seekerUpdateRequest) {
+        Seeker seeker = seekerRepository.findByUuid(uuid).orElseThrow(()-> 
+            new ResponseStatusException(
+                HttpStatus.NOT_FOUND, 
+                "Seeker not found!"
+            ));
+
+        // JobLevel jobLevel = jobLevelRepository.findByAlias(seekerUpdateRequest.jobLevel().toString()).orElseThrow(
+        //     ()-> new ResponseStatusException(
+        //         HttpStatus.NOT_FOUND,
+        //         "JobLevel not found!"
+        //     )
+        // );
+        // log.info("JobLevel : {}", jobLevel);
+        
+
+        // seekerMapper.fromSeekerUpdateRequest(seekerUpdateRequest, seeker);
+        // // seeker.setJobLevel(jobLevel.getAlias());
+        // // seeker.setJobLevel(seeker.getJobLevel() != null ? seeker.getJobLevel().getName() : null);
+        // // jobLevel(seeker.getJobLevel() != null ? seeker.getJobLevel().getName() : null);
+        // // seeker.setJobLevel(seekerUpdateRequest.jobLevelId()); 
+        // seeker = seekerRepository.save(seeker);
+
+        // DataRespone data = seekerMapper.toDataRespone(seeker);
+
+        // return SeekerDataRespone.builder()
+        //     .DATA(data)
+        //     .build();
+            // 3️⃣ Update JobLevel (entity!)
+    if (seekerUpdateRequest.jobLevel() != null) {   // assuming req.jobLevel() is alias or name
+        JobLevel jobLevel = jobLevelRepository.findByAlias(seekerUpdateRequest.jobLevel())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "JobLevel not found!"
+                ));
+        seeker.setJobLevel(jobLevel); // ✅ MUST set the entity, not the alias string
+    }
+
+    // 4️⃣ Save seeker
+    seekerRepository.save(seeker);
+
+    // 5️⃣ Build response manually
+    DataRespone data = DataRespone.builder()
+            .jobLevel(seeker.getJobLevel() != null ? seeker.getJobLevel().getName() : null) // return alias in response
+            .build();
+
+    return SeekerDataRespone.builder()
+            .DATA(data)
+            .build();
+    }
+
+    @Override
+    public SeekerDataRespone login(LoginRequest loginRequest) {
+
+        Authentication auth = new UsernamePasswordAuthenticationToken(loginRequest.email(), loginRequest.password());
+
+        auth = authProvider.authenticate(auth);
+
+        log.info("Authorities: {}", auth.getAuthorities());
+           String scope = auth.getAuthorities()
+                .stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(" "));
+        log.info("SCOPE: {}", scope);
+
+        Instant now = Instant.now();
+
+        // Create access token claims set
+        JwtClaimsSet jwtClaimsSet = JwtClaimsSet.builder()
+            .id(auth.getName())
+            .issuedAt(now)
+            .issuer("web")
+            .audience(List.of("nextjs", "reactjs"))
+            .subject("Access Token")
+            .expiresAt(now.plus(30, ChronoUnit.MINUTES))
+            .claim("scope", scope)
+            .build();
+
+        // Create refresh token claims set
+        JwtClaimsSet jwtClaimsSetRefreshToken = JwtClaimsSet.builder()
+            .id(auth.getName())
+            .issuedAt(now)
+            .issuer("web")
+            .audience(List.of("nextjs", "reactjs"))
+            .subject("Refresh Token")
+            .expiresAt(now.plus(7, ChronoUnit.DAYS))
+            .build();
+
+        JwtEncoderParameters jwtEncoderParameters = JwtEncoderParameters.from(jwtClaimsSet);
+        Jwt jwt = jwtEncoder.encode(jwtEncoderParameters);
+
+        JwtEncoderParameters jwtEncoderParametersRefreshToken = JwtEncoderParameters.from(jwtClaimsSetRefreshToken);
+        Jwt jwtRefreshToken = jwtEncoderRefreshToken.encode(jwtEncoderParametersRefreshToken);
+
+        String accessToken = jwt.getTokenValue();
+        String refreshToken = jwtRefreshToken.getTokenValue();
+
+        // JWT Respone
+        JwtRespone jwtRespone = JwtRespone.builder()
+            .tokenType(TOKEN_TYPE)
+            .accessToken(accessToken)
+            .refreshToken(refreshToken)
+            .build();
+        
+        Seeker seeker = seekerRepository.findByEmail(loginRequest.email())
+            .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"Seeker not found!"));
+        
+        DataRespone data = seekerMapper.toDataRespone(seeker);
+        
+        return SeekerDataRespone.builder()
+            .KEY(jwtRespone)    
+            .DATA(data)
+            .build();
+
+        // return SeekerDataRespone.builder()
+        //     .tokenType(TOKEN_TYPE)
+        //     .accessToken(accessToken)
+        //     .refreshToken(refreshToken)
+        //     .build();
+
+    
+        // Map<String,Object> dataRespone = new LinkedHashMap<>();
+        // SeekerDataRespone key = SeekerDataRespone.builder()
+        //     .tokenType(TOKEN_TYPE)
+        //     .accessToken(accessToken)
+        //     .refreshToken(refreshToken)
+        // .build();
+
+        // dataRespone.put("KEY", key);
+        // return dataRespone;
+    }
 
     @Override
     public void resentVerify(EmailRequest emailRequest) throws MessagingException{
@@ -100,20 +239,12 @@ public class SeekerServiceImpl implements SeekerService{
 
         emailVerificationRepository.save(emailVerification);
 
-        // Step 2. Prepare to send mail
-        String myHtml = String.format("""
-            <h1>JobPortal - Email Verification</h1>
-            <hr/>
-            %s
-            """, emailVerification.getVerificationCode()
-        );
-
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
-        helper.setSubject("Email Verification From JobPortal");
+        helper.setSubject("Resent Email Verification From JobPortal");
         helper.setTo(seeker.getEmail());
         helper.setFrom(myMail);
-        helper.setText(myHtml,true);
+        helper.setText(MailHtmlUtil.buildVerificationEmail(emailVerification.getVerificationCode()),true);
 
         javaMailSender.send(mimeMessage);
     }
@@ -178,7 +309,8 @@ public class SeekerServiceImpl implements SeekerService{
         }
 
         Seeker seeker = seekerMapper.fromRegisterRequest(registerRequest);
-        seeker.setUuid(registerRequest.fullName() + "-" + shortUuid);
+        seeker.setUuid(registerRequest.fullName().toLowerCase() + "-" + UUID.randomUUID().toString());
+        // seeker.setUuid(registerRequest.fullName() + "-" + shortUuid);
         seeker.setCreatedAt(LocalDateTime.now());
         seeker.setIsVerified(false);
         seeker.setIsBloked(false);
@@ -186,7 +318,6 @@ public class SeekerServiceImpl implements SeekerService{
         seeker.setIsAccountNonLocked(true);
         seeker.setIsCredentialsNonExpired(true);
         seeker.setIsDeleted(true);
-        // seeker.setPassword(passwordEncoder.encode(registerRequest.password()));
         seeker.setPassword(passwordEncoder.encode(seeker.getPassword()));
         
         List<Role> roles = new ArrayList<>();
@@ -194,28 +325,41 @@ public class SeekerServiceImpl implements SeekerService{
         seeker.setRoles(roles);
         seekerRepository.save(seeker);
 
+        // EmailVerification emailVerification = new EmailVerification();
+        // emailVerification.setVerificationCode(RandomUtil.random6Digits());
+        // emailVerification.setExpiryTime(LocalTime.now().plusMinutes(1));
+        // emailVerification.setSeeker(seeker);
+
+        // emailVerificationRepository.save(emailVerification);
+
+        // String myHtml = String.format("""
+        //     <h1>JobPortal - Email Verification</h1>
+        //     <hr/>
+        //     %s
+        //     """, emailVerification.getVerificationCode()
+        // );
+
+        // MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        // MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
+        // helper.setSubject("Email Verification From JobPortal");
+        // helper.setTo(seeker.getEmail());
+        // helper.setFrom(myMail);
+        // helper.setText(myHtml,true);
+
+        // javaMailSender.send(mimeMessage);
         EmailVerification emailVerification = new EmailVerification();
         emailVerification.setVerificationCode(RandomUtil.random6Digits());
         emailVerification.setExpiryTime(LocalTime.now().plusMinutes(1));
         emailVerification.setSeeker(seeker);
 
         emailVerificationRepository.save(emailVerification);
-
-        // Step 2. Prepare to send mail
-        String myHtml = String.format("""
-            <h1>JobPortal - Email Verification</h1>
-            <hr/>
-            %s
-            """, emailVerification.getVerificationCode()
-        );
-
+        
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
-        helper.setSubject("Email Verification From JobPortal");
+        helper.setSubject("Email Verification - MBanking");
         helper.setTo(seeker.getEmail());
-        helper.setFrom(myMail);
-        helper.setText(myHtml,true);
-
+        // helper.setFrom(myMail);
+        helper.setText(MailHtmlUtil.buildVerificationEmail(emailVerification.getVerificationCode()), true);
         javaMailSender.send(mimeMessage);
     }
 }

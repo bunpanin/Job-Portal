@@ -58,6 +58,39 @@ public class JwtConfig {
     }
 
 
+       // ============= Refresh Token ===============
+    @Bean("keyPairRefreshToken")
+    KeyPair keyPairRefreshToken() throws NoSuchAlgorithmException {
+        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+        keyPairGenerator.initialize(2048);
+        return keyPairGenerator.generateKeyPair();
+    }
+
+    @Bean("rsaKeyRefreshToken")
+    RSAKey rsaKeyRefreshToken(@org.springframework.beans.factory.annotation.Qualifier("keyPairRefreshToken") KeyPair keyPair) throws NoSuchAlgorithmException {
+        return new RSAKey
+                .Builder((RSAPublicKey) keyPair.getPublic())
+                .privateKey(keyPair.getPrivate())
+                .keyID(UUID.randomUUID().toString())
+                .build();
+    }
+
+    @Bean("jwkSourceRefreshToken")
+    JWKSource<SecurityContext> jwkSourceRefreshToken(@org.springframework.beans.factory.annotation.Qualifier("rsaKeyRefreshToken") RSAKey rsaKey) {
+        JWKSet jwkSet = new JWKSet(rsaKey);
+        return (jwkSelector, securityContext) -> jwkSelector.select(jwkSet);
+    }
+
+    @Bean("jwtDecoderRefreshToken")
+    JwtDecoder jwtDecoderRefreshToken(@org.springframework.beans.factory.annotation.Qualifier("rsaKeyRefreshToken") RSAKey rsaKey) throws JOSEException {
+        return NimbusJwtDecoder.withPublicKey(rsaKey.toRSAPublicKey()).build();
+    }
+
+    @Bean("jwtEncoderRefreshToken")
+    JwtEncoder jwtEncoderRefreshToken(@org.springframework.beans.factory.annotation.Qualifier("jwkSourceRefreshToken") JWKSource<SecurityContext> jwkSource) {
+        return new NimbusJwtEncoder(jwkSource);
+    }
+
 
 
 
