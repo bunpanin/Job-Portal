@@ -9,7 +9,7 @@ public record SeekerUpdateRequest(
     String gender,
     String profile,
     LocalDate dob,
-    String jobLevel,
+    Integer jobLevel,
     String address,
     String cityOrProvince,
     String country,

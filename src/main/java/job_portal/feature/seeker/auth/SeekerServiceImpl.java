@@ -81,49 +81,46 @@ public class SeekerServiceImpl implements SeekerService {
                 HttpStatus.NOT_FOUND, 
                 "Seeker not found!"
             ));
-
-        // JobLevel jobLevel = jobLevelRepository.findByAlias(seekerUpdateRequest.jobLevel().toString()).orElseThrow(
-        //     ()-> new ResponseStatusException(
-        //         HttpStatus.NOT_FOUND,
-        //         "JobLevel not found!"
-        //     )
-        // );
-        // log.info("JobLevel : {}", jobLevel);
         
-
-        // seekerMapper.fromSeekerUpdateRequest(seekerUpdateRequest, seeker);
-        // // seeker.setJobLevel(jobLevel.getAlias());
-        // // seeker.setJobLevel(seeker.getJobLevel() != null ? seeker.getJobLevel().getName() : null);
-        // // jobLevel(seeker.getJobLevel() != null ? seeker.getJobLevel().getName() : null);
-        // // seeker.setJobLevel(seekerUpdateRequest.jobLevelId()); 
-        // seeker = seekerRepository.save(seeker);
+        JobLevel jobLevel = null;
+        if(seekerUpdateRequest.jobLevel() != null){
+            jobLevel = jobLevelRepository.findById(seekerUpdateRequest.jobLevel())
+                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "JobLevel not found!"));
+        }
+        log.info("reweffdfbf : ",jobLevel);
+        seeker.setJobLevel(jobLevel);
+        seekerMapper.fromSeekerUpdateRequest(seekerUpdateRequest, seeker);
+        seeker = seekerRepository.save(seeker);
 
         // DataRespone data = seekerMapper.toDataRespone(seeker);
+        DataRespone data = DataRespone.builder()
+          .jobLevel(jobLevel != null ? jobLevel.getName() : null)
+            .uuid(seeker.getUuid())
+            .email(seeker.getEmail())
+            .phoneNumber(seeker.getPhoneNumber())
+            .password(seeker.getPhoneNumber())
+            .gender(seeker.getGender())
+            .profile(seeker.getProfile())
+            // .dob(seeker.getDob().toString())
+            .address(seeker.getAddress())
+            .cityOrProvince(seeker.getCityOrProvince())
+            .country(seeker.getCountry())
+            .githubAccount(seeker.getGithubAccount())
+            .linkInAccount(seeker.getLinkAccount())
+            .portfolio(seeker.getPortfolio())
+            .jobLevel(jobLevel.getName())
+            .uuid(seeker.getUuid())
+        .build();
 
-        // return SeekerDataRespone.builder()
-        //     .DATA(data)
-        //     .build();
-            // 3️⃣ Update JobLevel (entity!)
-    if (seekerUpdateRequest.jobLevel() != null) {   // assuming req.jobLevel() is alias or name
-        JobLevel jobLevel = jobLevelRepository.findByAlias(seekerUpdateRequest.jobLevel())
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "JobLevel not found!"
-                ));
-        seeker.setJobLevel(jobLevel); // ✅ MUST set the entity, not the alias string
-    }
+        
+        
 
-    // 4️⃣ Save seeker
-    seekerRepository.save(seeker);
+        seekerRepository.save(seeker);
 
-    // 5️⃣ Build response manually
-    DataRespone data = DataRespone.builder()
-            .jobLevel(seeker.getJobLevel() != null ? seeker.getJobLevel().getName() : null) // return alias in response
-            .build();
-
-    return SeekerDataRespone.builder()
-            .DATA(data)
-            .build();
-    }
+        return SeekerDataRespone.builder()
+                .DATA(data)
+                .build();
+        }
 
     @Override
     public SeekerDataRespone login(LoginRequest loginRequest) {
@@ -180,30 +177,40 @@ public class SeekerServiceImpl implements SeekerService {
         
         Seeker seeker = seekerRepository.findByEmail(loginRequest.email())
             .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"Seeker not found!"));
-        
-        DataRespone data = seekerMapper.toDataRespone(seeker);
-        
+
+        JobLevel jobLevel = null;
+        if(seeker.getJobLevel() != null && seeker.getJobLevel().getId() != null){
+            jobLevel = jobLevelRepository.findById(seeker.getJobLevel().getId()).orElseThrow(
+                ()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"JobLevel not found!")
+            );
+        }
+        // Set jobLevel only if exists
+        seeker.setJobLevel(jobLevel);
+
+        // seeker.setJobLevel(seeker.getJobLevel() != null ? seeker.getJobLevel().getName() : null);
+        // seeker.setJobLevel(jobLevel != null ? jobLevel : null);
+
+        // DataRespone data = seekerMapper.toDataRespone(seeker);
+        DataRespone data = DataRespone.builder()
+            .jobLevel(jobLevel != null ? jobLevel.getName() : null)
+            .uuid(seeker.getUuid())
+            .email(seeker.getEmail())
+            .phoneNumber(seeker.getPhoneNumber())
+            .password(seeker.getPhoneNumber())
+            .gender(seeker.getGender())
+            .profile(seeker.getProfile())
+            // .dob(seeker.getDob().toString())
+            .address(seeker.getAddress())
+            .cityOrProvince(seeker.getCityOrProvince())
+            .country(seeker.getCountry())
+            .githubAccount(seeker.getGithubAccount())
+            .linkInAccount(seeker.getLinkAccount())
+            .portfolio(seeker.getPortfolio())
+        .build();
         return SeekerDataRespone.builder()
-            .KEY(jwtRespone)    
+            .KEY(jwtRespone)
             .DATA(data)
             .build();
-
-        // return SeekerDataRespone.builder()
-        //     .tokenType(TOKEN_TYPE)
-        //     .accessToken(accessToken)
-        //     .refreshToken(refreshToken)
-        //     .build();
-
-    
-        // Map<String,Object> dataRespone = new LinkedHashMap<>();
-        // SeekerDataRespone key = SeekerDataRespone.builder()
-        //     .tokenType(TOKEN_TYPE)
-        //     .accessToken(accessToken)
-        //     .refreshToken(refreshToken)
-        // .build();
-
-        // dataRespone.put("KEY", key);
-        // return dataRespone;
     }
 
     @Override

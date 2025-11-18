@@ -9,4 +9,6 @@ import job_portal.domain.backend.seeker.JobLevel;
 @Repository
 public interface JobLevelRepository extends JpaRepository<JobLevel,Integer> {
     Optional<JobLevel> findByAlias(String alias);
+    // Optional<JobLevel> findById(String id);
+
 }

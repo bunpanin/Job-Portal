@@ -1,16 +1,14 @@
 package job_portal.mapper.seeker;
 
-import java.time.format.DateTimeFormatter;
 import javax.annotation.processing.Generated;
 import job_portal.domain.backend.seeker.Seeker;
-import job_portal.feature.seeker.auth.dto.DataRespone;
 import job_portal.feature.seeker.auth.dto.RegisterRequest;
 import job_portal.feature.seeker.auth.dto.SeekerUpdateRequest;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-11-17T02:21:49+0700",
+    date = "2025-11-18T01:01:42+0700",
     comments = "version: 1.5.5.Final, compiler: IncrementalProcessingEnvironment from gradle-language-java-8.14.3.jar, environment: Java 21.0.8 (Eclipse Adoptium)"
 )
 @Component
@@ -88,54 +86,5 @@ public class SeekerMapperImpl implements SeekerMapper {
         seeker.setPassword( registerRequest.password() );
 
         return seeker;
-    }
-
-    @Override
-    public DataRespone toDataRespone(Seeker seeker) {
-        if ( seeker == null ) {
-            return null;
-        }
-
-        DataRespone.DataResponeBuilder dataRespone = DataRespone.builder();
-
-        dataRespone.uuid( seeker.getUuid() );
-        dataRespone.fullName( seeker.getFullName() );
-        dataRespone.email( seeker.getEmail() );
-        dataRespone.phoneNumber( seeker.getPhoneNumber() );
-        dataRespone.password( seeker.getPassword() );
-        dataRespone.gender( seeker.getGender() );
-        dataRespone.profile( seeker.getProfile() );
-        if ( seeker.getDob() != null ) {
-            dataRespone.dob( DateTimeFormatter.ISO_LOCAL_DATE.format( seeker.getDob() ) );
-        }
-        dataRespone.address( seeker.getAddress() );
-        dataRespone.cityOrProvince( seeker.getCityOrProvince() );
-        dataRespone.country( seeker.getCountry() );
-        dataRespone.githubAccount( seeker.getGithubAccount() );
-        dataRespone.linkAccount( seeker.getLinkAccount() );
-        dataRespone.portfolio( seeker.getPortfolio() );
-        dataRespone.education( seeker.getEducation() );
-        dataRespone.achievement( seeker.getAchievement() );
-        dataRespone.descriptionYourSelf( seeker.getDescriptionYourSelf() );
-        if ( seeker.getCreatedAt() != null ) {
-            dataRespone.createdAt( DateTimeFormatter.ISO_LOCAL_DATE_TIME.format( seeker.getCreatedAt() ) );
-        }
-        if ( seeker.getIsVerified() != null ) {
-            dataRespone.isVerified( String.valueOf( seeker.getIsVerified() ) );
-        }
-        if ( seeker.getIsBloked() != null ) {
-            dataRespone.isBloked( String.valueOf( seeker.getIsBloked() ) );
-        }
-        if ( seeker.getIsAccountNonExpired() != null ) {
-            dataRespone.isAccountNonExpired( String.valueOf( seeker.getIsAccountNonExpired() ) );
-        }
-        if ( seeker.getIsAccountNonLocked() != null ) {
-            dataRespone.isAccountNonLocked( String.valueOf( seeker.getIsAccountNonLocked() ) );
-        }
-        if ( seeker.getIsCredentialsNonExpired() != null ) {
-            dataRespone.isCredentialsNonExpired( String.valueOf( seeker.getIsCredentialsNonExpired() ) );
-        }
-
-        return dataRespone.build();
     }
 }

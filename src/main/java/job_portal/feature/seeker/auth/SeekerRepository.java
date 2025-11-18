@@ -11,5 +11,4 @@ public interface SeekerRepository extends JpaRepository<Seeker,Integer> {
     Boolean existsByEmail(String email); 
     Optional<Seeker> findByEmail(String email);
     Optional<Seeker> findByUuid(String uuid);
-
 }
