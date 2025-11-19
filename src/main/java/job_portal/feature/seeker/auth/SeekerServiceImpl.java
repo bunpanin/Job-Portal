@@ -1,5 +1,6 @@
 package job_portal.feature.seeker.auth;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
@@ -18,18 +19,29 @@ import org.springframework.web.server.ResponseStatusException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import job_portal.domain.backend.Role;
-import job_portal.domain.backend.RoleRepository;
 import job_portal.domain.backend.seeker.EmailVerification;
 import job_portal.domain.backend.seeker.JobLevel;
 import job_portal.domain.backend.seeker.Seeker;
+import job_portal.domain.backend.seeker.SeekerWorkExperience;
+import job_portal.domain.backend.seeker.TypeOfExperience;
+import job_portal.domain.backend.seeker.WorkExperience;
+import job_portal.feature.seeker.auth.Repo.EmailVerificationRepository;
+import job_portal.feature.seeker.auth.Repo.JobLevelRepository;
+import job_portal.feature.seeker.auth.Repo.RoleRepository;
+import job_portal.feature.seeker.auth.Repo.SeekerWorkExperienceRepository;
+import job_portal.feature.seeker.auth.Repo.TypeOfExperienceRepository;
+import job_portal.feature.seeker.auth.Repo.WorkExperienceRepository;
 import job_portal.feature.seeker.auth.dto.DataRespone;
 import job_portal.feature.seeker.auth.dto.EmailRequest;
 import job_portal.feature.seeker.auth.dto.JwtRespone;
 import job_portal.feature.seeker.auth.dto.LoginRequest;
 import job_portal.feature.seeker.auth.dto.RegisterRequest;
+import job_portal.feature.seeker.auth.dto.RoleRespone;
 import job_portal.feature.seeker.auth.dto.SeekerDataRespone;
 import job_portal.feature.seeker.auth.dto.SeekerUpdateRequest;
 import job_portal.feature.seeker.auth.dto.VerifyRequest;
+import job_portal.feature.seeker.auth.dto.WorkExperienceRequest;
+import job_portal.feature.seeker.auth.dto.WorkExperienceRespone;
 import job_portal.mapper.seeker.SeekerMapper;
 import job_portal.util.MailHtmlUtil;
 import job_portal.util.RandomUtil;
@@ -55,6 +67,9 @@ public class SeekerServiceImpl implements SeekerService {
     private final RoleRepository roleRepository;
     private final JobLevelRepository jobLevelRepository;
     private final AuthenticationManager authProvider;
+    private final TypeOfExperienceRepository typeOfExperienceRepository;
+    private final SeekerWorkExperienceRepository seekerWorkExperienceRepository;
+    private final WorkExperienceRepository workExperienceRepository;
 
     // Mail Config
     private final EmailVerificationRepository emailVerificationRepository;
@@ -81,26 +96,75 @@ public class SeekerServiceImpl implements SeekerService {
                 HttpStatus.NOT_FOUND, 
                 "Seeker not found!"
             ));
-        
+             
         JobLevel jobLevel = null;
         if(seekerUpdateRequest.jobLevel() != null){
             jobLevel = jobLevelRepository.findById(seekerUpdateRequest.jobLevel())
                 .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "JobLevel not found!"));
         }
-        log.info("reweffdfbf : ",jobLevel);
         seeker.setJobLevel(jobLevel);
         seekerMapper.fromSeekerUpdateRequest(seekerUpdateRequest, seeker);
         seeker = seekerRepository.save(seeker);
 
-        // DataRespone data = seekerMapper.toDataRespone(seeker);
+        // ======================== Update Work Experience =============================
+        
+        if(seekerUpdateRequest.workExperienceRequests() != null){
+            for(WorkExperienceRequest w : seekerUpdateRequest.workExperienceRequests()){
+
+                JobLevel jobLevelExp = jobLevelRepository.findById(w.jobLevel())
+                    .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "JobLevel not found!")
+                );
+
+                TypeOfExperience typeExp = typeOfExperienceRepository.findById(w.typeOfExperience())
+                    .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "TypeOfExperience not found!"));
+
+                WorkExperience exp = new WorkExperience();
+                exp.setJobTittle(w.jobTitle());
+                exp.setJobLevel(jobLevelExp);
+                exp.setCompanyName(w.company());
+                exp.setTypeOfExperience(typeExp);
+                exp.setCityOrProvince(w.cityOrProvince());
+                exp.setCountry(w.country());
+                exp.setStartDate(w.startDate());
+                exp.setEndDate(w.endDate());
+                exp.setDescriptionsYourExperience(w.descriptionYourExperience());
+                /// save workExperience first
+                exp = workExperienceRepository.save(exp); 
+                SeekerWorkExperience seekerWorkExp = new SeekerWorkExperience();
+                seekerWorkExp.setSeeker(seeker);
+                seekerWorkExp.setWorkExperience(exp);
+                seekerWorkExp.setCreatedAt(LocalDate.now());
+
+                seekerWorkExperienceRepository.save(seekerWorkExp);
+            }
+        }
+        
+    
+    List<WorkExperienceRespone> workExperienceRespones = seeker.getSeekerWorkExperiences()
+    .stream()
+    .map(exp -> new WorkExperienceRespone(
+            exp.getWorkExperience().getId(),
+            exp.getWorkExperience().getJobTittle(),
+            exp.getWorkExperience().getJobLevel().getName(),
+            exp.getWorkExperience().getCompanyName(),
+            exp.getWorkExperience().getTypeOfExperience().getName(),
+            exp.getWorkExperience().getCityOrProvince(),
+            exp.getWorkExperience().getCountry(),
+            exp.getWorkExperience().getStartDate(),
+            exp.getWorkExperience().getEndDate(),
+            exp.getWorkExperience().getDescriptionsYourExperience()
+    ))
+    .toList();
+
         DataRespone data = DataRespone.builder()
-          .jobLevel(jobLevel != null ? jobLevel.getName() : null)
+            .jobLevel(jobLevel != null ? jobLevel.getName() : null)
             .uuid(seeker.getUuid())
             .email(seeker.getEmail())
             .phoneNumber(seeker.getPhoneNumber())
             .password(seeker.getPhoneNumber())
             .gender(seeker.getGender())
             .profile(seeker.getProfile())
+            .workExperienceRequests(workExperienceRespones)
             // .dob(seeker.getDob().toString())
             .address(seeker.getAddress())
             .cityOrProvince(seeker.getCityOrProvince())
@@ -108,14 +172,10 @@ public class SeekerServiceImpl implements SeekerService {
             .githubAccount(seeker.getGithubAccount())
             .linkInAccount(seeker.getLinkAccount())
             .portfolio(seeker.getPortfolio())
-            .jobLevel(jobLevel.getName())
             .uuid(seeker.getUuid())
         .build();
 
-        
-        
-
-        seekerRepository.save(seeker);
+        // seekerRepository.save(seeker);
 
         return SeekerDataRespone.builder()
                 .DATA(data)
@@ -178,6 +238,16 @@ public class SeekerServiceImpl implements SeekerService {
         Seeker seeker = seekerRepository.findByEmail(loginRequest.email())
             .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"Seeker not found!"));
 
+        List<RoleRespone> roleRespones = seeker.getRoles()
+            .stream()
+            .map(role -> new RoleRespone(
+                role.getUuid(),
+                role.getName(),
+                role.getAlias()
+                )
+            )
+            .toList();
+
         JobLevel jobLevel = null;
         if(seeker.getJobLevel() != null && seeker.getJobLevel().getId() != null){
             jobLevel = jobLevelRepository.findById(seeker.getJobLevel().getId()).orElseThrow(
@@ -197,15 +267,23 @@ public class SeekerServiceImpl implements SeekerService {
             .email(seeker.getEmail())
             .phoneNumber(seeker.getPhoneNumber())
             .password(seeker.getPhoneNumber())
+            .password(seeker.getPassword())
             .gender(seeker.getGender())
             .profile(seeker.getProfile())
-            // .dob(seeker.getDob().toString())
+            .roles(roleRespones)
+            .dob(seeker.getDob())
             .address(seeker.getAddress())
             .cityOrProvince(seeker.getCityOrProvince())
             .country(seeker.getCountry())
             .githubAccount(seeker.getGithubAccount())
             .linkInAccount(seeker.getLinkAccount())
             .portfolio(seeker.getPortfolio())
+            .createdAt(seeker.getCreatedAt())
+            .isVerified(seeker.getIsVerified())
+            .isBloked(seeker.getIsBloked())
+            .isAccountNonExpired(seeker.getIsAccountNonExpired())
+            .isAccountNonLocked(seeker.getIsAccountNonLocked())
+            .isCredentialsNonExpired(seeker.getIsCredentialsNonExpired())
         .build();
         return SeekerDataRespone.builder()
             .KEY(jwtRespone)
@@ -329,6 +407,9 @@ public class SeekerServiceImpl implements SeekerService {
         
         List<Role> roles = new ArrayList<>();
         roles.add(roleRepository.findById(1).orElseThrow());
+        roles.add(roleRepository.findById(2).orElseThrow());
+        roles.add(roleRepository.findById(3).orElseThrow());
+        roles.add(roleRepository.findById(4).orElseThrow());
         seeker.setRoles(roles);
         seekerRepository.save(seeker);
 

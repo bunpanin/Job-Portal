@@ -1,5 +1,7 @@
 package job_portal.feature.seeker.auth.dto;
 import java.time.LocalDate;
+import java.util.List;
+
 import lombok.Builder;
 
 @Builder
@@ -19,6 +21,7 @@ public record SeekerUpdateRequest(
     String education,
     String achievement,
     String skill,
+    List<WorkExperienceRequest>  workExperienceRequests,
     String language,
     String reference,
     String descriptionYourSelf

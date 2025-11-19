@@ -1,8 +1,10 @@
 package job_portal.domain.backend;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -27,8 +29,15 @@ public class Role implements GrantedAuthority{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
+    @Column(unique = true)
+    private String uuid;
+    @Column(unique = true)
     private String name;
+    @Column(unique = true)
+    private String alias;
+
+    private Boolean isDeleted;
+    private LocalDate createdAt;
 
     @ManyToMany(mappedBy = "roles")
     private List<Seeker> seekers;  

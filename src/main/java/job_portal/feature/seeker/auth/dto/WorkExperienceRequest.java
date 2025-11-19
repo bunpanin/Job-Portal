@@ -1,0 +1,34 @@
+package job_portal.feature.seeker.auth.dto;
+import java.time.LocalDate;
+
+import jakarta.persistence.Column;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.Builder;
+
+@Builder
+public record WorkExperienceRequest(
+    // Integer id,
+    @NotBlank(message = "JobTitle is required!")
+    @Size(max =  150, message = "JobTitle must be less than 100 charaters")
+    String jobTitle,
+    @NotNull(message = "JobLevel is required!")
+    Integer jobLevel,
+    @NotBlank(message = "Company is required!")
+    String company,
+    @NotNull(message = "TypeOfExperience is required!")
+    Integer typeOfExperience,
+    @NotBlank(message = "CityOrProvince is required!")
+    String cityOrProvince,
+    @NotBlank(message = "Country is required!")
+    String country,
+    @NotNull(message = "StartDate is required!")
+    LocalDate startDate,
+    @NotNull(message = "EndDate is required!")
+    LocalDate endDate,
+    @NotBlank(message = "DescriptionYourExperience is required!")
+    @Column(columnDefinition = "TEXT")
+    String descriptionYourExperience
+) {
+}

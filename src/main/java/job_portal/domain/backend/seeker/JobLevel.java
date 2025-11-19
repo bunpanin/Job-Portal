@@ -31,8 +31,9 @@ public class JobLevel {
     private String alias;
     @Column(nullable = false, unique = true, length = 25)
     private String name; 
-    @Column(columnDefinition = "TEXT")
-    private String description;
+    
+    // @Column(columnDefinition = "TEXT")
+    // private String description;
     
     private Boolean isDeleted;
     private LocalDate createdAt;
