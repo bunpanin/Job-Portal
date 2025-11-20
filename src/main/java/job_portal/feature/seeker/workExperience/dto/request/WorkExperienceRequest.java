@@ -1,4 +1,4 @@
-package job_portal.feature.seeker.auth.dto;
+package job_portal.feature.seeker.workExperience.dto.request;
 import java.time.LocalDate;
 
 import jakarta.persistence.Column;

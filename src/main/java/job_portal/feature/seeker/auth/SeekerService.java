@@ -1,12 +1,12 @@
 package job_portal.feature.seeker.auth;
 
 import jakarta.mail.MessagingException;
-import job_portal.feature.seeker.auth.dto.EmailRequest;
-import job_portal.feature.seeker.auth.dto.LoginRequest;
-import job_portal.feature.seeker.auth.dto.RegisterRequest;
-import job_portal.feature.seeker.auth.dto.SeekerDataRespone;
-import job_portal.feature.seeker.auth.dto.SeekerUpdateRequest;
-import job_portal.feature.seeker.auth.dto.VerifyRequest;
+import job_portal.feature.seeker.auth.dto.request.EmailRequest;
+import job_portal.feature.seeker.auth.dto.request.RegisterRequest;
+import job_portal.feature.seeker.auth.dto.request.SeekerUpdateRequest;
+import job_portal.feature.seeker.auth.dto.request.VerifyRequest;
+import job_portal.feature.seeker.auth.dto.respone.LoginRequest;
+import job_portal.feature.seeker.auth.dto.respone.SeekerDataRespone;
 
 public interface SeekerService {
     

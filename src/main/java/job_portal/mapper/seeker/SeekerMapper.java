@@ -5,9 +5,8 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import job_portal.domain.backend.seeker.Seeker;
-// import job_portal.feature.seeker.auth.dto.DataRespone;
-import job_portal.feature.seeker.auth.dto.RegisterRequest;
-import job_portal.feature.seeker.auth.dto.SeekerUpdateRequest;
+import job_portal.feature.seeker.auth.dto.request.RegisterRequest;
+import job_portal.feature.seeker.auth.dto.request.SeekerUpdateRequest;
 
 @Mapper(componentModel = "spring")
 public interface SeekerMapper{

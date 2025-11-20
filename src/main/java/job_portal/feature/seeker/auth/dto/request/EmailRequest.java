@@ -1,13 +1,10 @@
-package job_portal.feature.seeker.auth.dto;
-
+package job_portal.feature.seeker.auth.dto.request;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
-public record LoginRequest(
+public record EmailRequest(
     @Email(message = "Email must be a valid address!")
     @NotBlank(message = "Email is required")
-    String email,
-    @NotBlank(message = "Password is required")
-    String password
+    String email
 ) {
 }

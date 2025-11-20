@@ -2,8 +2,9 @@ package job_portal.mapper.seeker;
 
 import javax.annotation.processing.Generated;
 import job_portal.domain.backend.seeker.Seeker;
-import job_portal.feature.seeker.auth.dto.RegisterRequest;
-import job_portal.feature.seeker.auth.dto.SeekerUpdateRequest;
+import job_portal.feature.seeker.auth.dto.request.RegisterRequest;
+import job_portal.feature.seeker.auth.dto.request.SeekerUpdateRequest;
+
 import org.springframework.stereotype.Component;
 
 @Generated(

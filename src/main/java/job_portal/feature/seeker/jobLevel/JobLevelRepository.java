@@ -1,4 +1,4 @@
-package job_portal.feature.seeker.auth.Repo;
+package job_portal.feature.seeker.jobLevel;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;

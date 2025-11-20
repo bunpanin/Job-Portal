@@ -1,7 +1,8 @@
-package job_portal.feature.seeker.auth.dto;
+package job_portal.feature.seeker.auth.dto.request;
 import java.time.LocalDate;
 import java.util.List;
 
+import job_portal.feature.seeker.workExperience.dto.request.WorkExperienceRequest;
 import lombok.Builder;
 
 @Builder

@@ -1,4 +1,4 @@
-package job_portal.feature.seeker.auth.dto;
+package job_portal.feature.seeker.auth.dto.respone;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -6,6 +6,8 @@ import java.util.List;
 import javax.management.relation.Role;
 
 import job_portal.domain.backend.seeker.SeekerWorkExperience;
+import job_portal.feature.seeker.role.dto.respone.RoleRespone;
+import job_portal.feature.seeker.workExperience.dto.respone.WorkExperienceRespone;
 import lombok.Builder;
 
 @Builder
