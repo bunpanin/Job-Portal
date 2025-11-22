@@ -1,4 +1,4 @@
-package job_portal.feature.seeker.workExperience;
+package job_portal.feature.seeker.education;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -10,38 +10,36 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
-import job_portal.feature.seeker.workExperience.dto.request.CreateWorkExperienceRequest;
-import job_portal.feature.seeker.workExperience.dto.request.UpdateWorkExperienceRequest;
-import job_portal.feature.seeker.workExperience.dto.respone.WorkExperienceRespone;
+import job_portal.feature.seeker.education.dto.request.CreateEductionRequest;
+import job_portal.feature.seeker.education.dto.request.UpdateEducationRequest;
+import job_portal.feature.seeker.education.dto.respone.EducationRespone;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/v1/seeker/workExperience")
+@RequestMapping("/api/v1/seeker/education")
 @RequiredArgsConstructor
-public class WorkExperienceController {
+public class EducationController {
 
-    private final WorkExperienceService workExperienceService;
+    private final EducationService educationService;
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasAnyAuthority('ROLE_SEEKER', 'ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     void deleteById(@PathVariable Integer id){
-        // educationService.deleteById(id);
-        workExperienceService.deleteById(id);
+        educationService.deleteById(id);
     }
 
     @PreAuthorize("hasAuthority('ROLE_SEEKER')")
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.CREATED)
-    WorkExperienceRespone updateWorkExperienceById(@PathVariable Integer id,@Valid @RequestBody UpdateWorkExperienceRequest updateWorkExperienceRequest){
-        return workExperienceService.updateById(id, updateWorkExperienceRequest);
+    EducationRespone updateEducationById(@PathVariable Integer id,@Valid @RequestBody UpdateEducationRequest updateEducationRequest){
+        return educationService.updateById(id, updateEducationRequest);
     }
 
-
-    @PostMapping("/{uuid}")
     @PreAuthorize("hasAuthority('ROLE_SEEKER')")
+    @PostMapping("/{uuid}")
     @ResponseStatus(HttpStatus.CREATED)
-    void createNew(@PathVariable String uuid, @Valid @RequestBody CreateWorkExperienceRequest createWorkExperienceRequest){
-        workExperienceService.createNewExperience(uuid, createWorkExperienceRequest);
+    void createNew(@Valid @PathVariable String uuid, @RequestBody CreateEductionRequest createEductionRequest){
+        educationService.createNewEducation(uuid, createEductionRequest);
     }
 }

@@ -1,18 +1,18 @@
-package job_portal.feature.seeker.workExperience.dto.respone;
+package job_portal.feature.seeker.workExperience.dto.request;
 import java.time.LocalDate;
-
 import lombok.Builder;
+
 @Builder
-public record WorkExperienceRespone(
-    Integer id,
+public record UpdateWorkExperienceRequest(
     String jobTittle,
-    String jobLevel,
-    String company,
-    String typeOfExperience,
+    Integer jobLevel,
+    Integer typeOfExperience,
+    String companyName,
     String cityOrProvince,
     String country,
     LocalDate startDate,
     LocalDate endDate,
     String descriptionYourExperience
 ) {
+    
 }

@@ -8,21 +8,27 @@ import jakarta.validation.constraints.Size;
 import lombok.Builder;
 
 @Builder
-public record WorkExperienceRequest(
-    // Integer id,
+public record CreateWorkExperienceRequest(
+
     @NotBlank(message = "JobTitle is required!")
     @Size(max =  150, message = "JobTitle must be less than 100 charaters")
-    String jobTitle,
+    String jobTittle,
+
     @NotNull(message = "JobLevel is required!")
     Integer jobLevel,
-    @NotBlank(message = "Company is required!")
-    String company,
-    @NotNull(message = "TypeOfExperience is required!")
+
     Integer typeOfExperience,
     @NotBlank(message = "CityOrProvince is required!")
+
+    @NotBlank(message = "Company is required!")
+    String companyName,
+
+    @NotNull(message = "TypeOfExperience is required!")
     String cityOrProvince,
+
     @NotBlank(message = "Country is required!")
     String country,
+
     @NotNull(message = "StartDate is required!")
     LocalDate startDate,
     @NotNull(message = "EndDate is required!")

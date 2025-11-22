@@ -49,7 +49,7 @@ public class WorkExperience {
     @Column(nullable = false)
     private LocalDate endDate;
     @Column(columnDefinition = "TEXT", nullable = false)
-    private String descriptionsYourExperience;
+    private String descriptionYourExperience;
 
     @OneToMany(mappedBy = "workExperience")
     private List<SeekerWorkExperience> seekerWorkExperiences;

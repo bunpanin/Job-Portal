@@ -2,7 +2,6 @@ package job_portal.domain.backend.seeker;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-// import javax.management.relation.Role;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -58,6 +57,9 @@ public class Seeker {
 
     @OneToMany(mappedBy = "seeker")
     private List<SeekerWorkExperience> seekerWorkExperiences;
+
+    @OneToMany(mappedBy = "seeker")
+    private List<SeekerEducation> seekerEducations;
 
     private String education;
     private String achievement;

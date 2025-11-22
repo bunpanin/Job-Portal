@@ -1,6 +1,5 @@
 package job_portal.feature.seeker.auth;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
@@ -19,27 +18,31 @@ import org.springframework.web.server.ResponseStatusException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import job_portal.domain.backend.Role;
+import job_portal.domain.backend.seeker.Degree;
+import job_portal.domain.backend.seeker.Education;
 import job_portal.domain.backend.seeker.EmailVerification;
 import job_portal.domain.backend.seeker.JobLevel;
 import job_portal.domain.backend.seeker.Seeker;
+import job_portal.domain.backend.seeker.SeekerEducation;
 import job_portal.domain.backend.seeker.SeekerWorkExperience;
 import job_portal.domain.backend.seeker.TypeOfExperience;
 import job_portal.domain.backend.seeker.WorkExperience;
 import job_portal.feature.seeker.auth.dto.request.EmailRequest;
 import job_portal.feature.seeker.auth.dto.request.RegisterRequest;
-import job_portal.feature.seeker.auth.dto.request.SeekerUpdateRequest;
 import job_portal.feature.seeker.auth.dto.request.VerifyRequest;
 import job_portal.feature.seeker.auth.dto.respone.DataRespone;
 import job_portal.feature.seeker.auth.dto.respone.JwtRespone;
 import job_portal.feature.seeker.auth.dto.respone.LoginRequest;
 import job_portal.feature.seeker.auth.dto.respone.SeekerDataRespone;
+import job_portal.feature.seeker.degree.DegreeRepository;
+import job_portal.feature.seeker.education.EducationRepository;
+import job_portal.feature.seeker.education.dto.respone.EducationRespone;
 import job_portal.feature.seeker.jobLevel.JobLevelRepository;
 import job_portal.feature.seeker.role.RoleRepository;
 import job_portal.feature.seeker.role.dto.respone.RoleRespone;
 import job_portal.feature.seeker.typeOfExperience.TypeOfExperienceRepository;
 import job_portal.feature.seeker.workExperience.SeekerWorkExperienceRepository;
 import job_portal.feature.seeker.workExperience.WorkExperienceRepository;
-import job_portal.feature.seeker.workExperience.dto.request.WorkExperienceRequest;
 import job_portal.feature.seeker.workExperience.dto.respone.WorkExperienceRespone;
 import job_portal.mapper.seeker.SeekerMapper;
 import job_portal.util.MailHtmlUtil;
@@ -69,6 +72,8 @@ public class SeekerServiceImpl implements SeekerService {
     private final TypeOfExperienceRepository typeOfExperienceRepository;
     private final SeekerWorkExperienceRepository seekerWorkExperienceRepository;
     private final WorkExperienceRepository workExperienceRepository;
+    private final DegreeRepository degreeRepository;
+    private final EducationRepository educationRepository;
 
     // Mail Config
     private final EmailVerificationRepository emailVerificationRepository;
@@ -88,98 +93,94 @@ public class SeekerServiceImpl implements SeekerService {
         this.jwtEncoderRefreshToken = jwtEncoderRefreshToken;
     }
 
-    @Override
-    public SeekerDataRespone updateByUuid(String uuid, SeekerUpdateRequest seekerUpdateRequest) {
-        Seeker seeker = seekerRepository.findByUuid(uuid).orElseThrow(()-> 
-            new ResponseStatusException(
-                HttpStatus.NOT_FOUND, 
-                "Seeker not found!"
-            ));
+    // @Override
+    // public SeekerDataRespone updateByUuid(String uuid, SeekerUpdateRequest seekerUpdateRequest) {
+    //     Seeker seeker = seekerRepository.findByUuid(uuid).orElseThrow(()-> 
+    //         new ResponseStatusException(
+    //             HttpStatus.NOT_FOUND, 
+    //             "Seeker not found!"
+    //         ));
              
-        JobLevel jobLevel = null;
-        if(seekerUpdateRequest.jobLevel() != null){
-            jobLevel = jobLevelRepository.findById(seekerUpdateRequest.jobLevel())
-                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "JobLevel not found!"));
-        }
-        seeker.setJobLevel(jobLevel);
-        seekerMapper.fromSeekerUpdateRequest(seekerUpdateRequest, seeker);
-        seeker = seekerRepository.save(seeker);
+    //     JobLevel jobLevel = null;
+    //     if(seekerUpdateRequest.jobLevel() != null){
+    //         jobLevel = jobLevelRepository.findById(seekerUpdateRequest.jobLevel())
+    //             .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "JobLevel not found!"));
+    //     }
+    //     seeker.setJobLevel(jobLevel);
+    //     seekerMapper.fromSeekerUpdateRequest(seekerUpdateRequest, seeker);
+    //     seeker = seekerRepository.save(seeker);
 
-        // ======================== Update Work Experience =============================
+    //     // ======================== Update Work Experience =============================
         
-        if(seekerUpdateRequest.workExperienceRequests() != null){
-            for(WorkExperienceRequest w : seekerUpdateRequest.workExperienceRequests()){
+    //     if(seekerUpdateRequest.workExperienceRequests() != null){
+    //         for(WorkExperienceRequest w : seekerUpdateRequest.workExperienceRequests()){
 
-                JobLevel jobLevelExp = jobLevelRepository.findById(w.jobLevel())
-                    .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "JobLevel not found!")
-                );
+    //             JobLevel jobLevelExp = jobLevelRepository.findById(w.jobLevel())
+    //                 .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "JobLevel not found!")
+    //             );
 
-                TypeOfExperience typeExp = typeOfExperienceRepository.findById(w.typeOfExperience())
-                    .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "TypeOfExperience not found!"));
+    //             TypeOfExperience typeExp = typeOfExperienceRepository.findById(w.typeOfExperience())
+    //                 .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "TypeOfExperience not found!"));
 
-                WorkExperience exp = new WorkExperience();
-                exp.setJobTittle(w.jobTitle());
-                exp.setJobLevel(jobLevelExp);
-                exp.setCompanyName(w.company());
-                exp.setTypeOfExperience(typeExp);
-                exp.setCityOrProvince(w.cityOrProvince());
-                exp.setCountry(w.country());
-                exp.setStartDate(w.startDate());
-                exp.setEndDate(w.endDate());
-                exp.setDescriptionsYourExperience(w.descriptionYourExperience());
-                /// save workExperience first
-                exp = workExperienceRepository.save(exp); 
-                SeekerWorkExperience seekerWorkExp = new SeekerWorkExperience();
-                seekerWorkExp.setSeeker(seeker);
-                seekerWorkExp.setWorkExperience(exp);
-                seekerWorkExp.setCreatedAt(LocalDate.now());
+    //             WorkExperience exp = new WorkExperience();
+    //             exp.setJobTittle(w.jobTitle());
+    //             exp.setJobLevel(jobLevelExp);
+    //             exp.setCompanyName(w.company());
+    //             exp.setTypeOfExperience(typeExp);
+    //             exp.setCityOrProvince(w.cityOrProvince());
+    //             exp.setCountry(w.country());
+    //             exp.setStartDate(w.startDate());
+    //             exp.setEndDate(w.endDate());
+    //             exp.setDescriptionsYourExperience(w.descriptionYourExperience());
+    //             /// save workExperience first
+    //             exp = workExperienceRepository.save(exp); 
+    //             SeekerWorkExperience seekerWorkExp = new SeekerWorkExperience();
+    //             seekerWorkExp.setSeeker(seeker);
+    //             seekerWorkExp.setWorkExperience(exp);
+    //             seekerWorkExp.setCreatedAt(LocalDate.now());
 
-                seekerWorkExperienceRepository.save(seekerWorkExp);
-            }
-        }
+    //             seekerWorkExperienceRepository.save(seekerWorkExp);
+    //         }
+    //     }
         
     
-    List<WorkExperienceRespone> workExperienceRespones = seeker.getSeekerWorkExperiences()
-    .stream()
-    .map(exp -> new WorkExperienceRespone(
-            exp.getWorkExperience().getId(),
-            exp.getWorkExperience().getJobTittle(),
-            exp.getWorkExperience().getJobLevel().getName(),
-            exp.getWorkExperience().getCompanyName(),
-            exp.getWorkExperience().getTypeOfExperience().getName(),
-            exp.getWorkExperience().getCityOrProvince(),
-            exp.getWorkExperience().getCountry(),
-            exp.getWorkExperience().getStartDate(),
-            exp.getWorkExperience().getEndDate(),
-            exp.getWorkExperience().getDescriptionsYourExperience()
-    ))
-    .toList();
+    // List<WorkExperienceRespone> workExperienceRespones = seeker.getSeekerWorkExperiences()
+    // .stream()
+    // .map(exp -> new WorkExperienceRespone(
+    //         exp.getWorkExperience().getId(),
+    //         exp.getWorkExperience().getJobTittle(),
+    //         exp.getWorkExperience().getJobLevel().getName(),
+    //         exp.getWorkExperience().getCompanyName(),
+    //         exp.getWorkExperience().getTypeOfExperience().getName(),
+    //         exp.getWorkExperience().getCityOrProvince(),
+    //         exp.getWorkExperience().getCountry(),
+    //         exp.getWorkExperience().getStartDate(),
+    //         exp.getWorkExperience().getEndDate(),
+    //         exp.getWorkExperience().getDescriptionsYourExperience()
+    // ))
+    // .toList();
 
-        DataRespone data = DataRespone.builder()
-            .jobLevel(jobLevel != null ? jobLevel.getName() : null)
-            .uuid(seeker.getUuid())
-            .email(seeker.getEmail())
-            .phoneNumber(seeker.getPhoneNumber())
-            .password(seeker.getPhoneNumber())
-            .gender(seeker.getGender())
-            .profile(seeker.getProfile())
-            .workExperienceRequests(workExperienceRespones)
-            // .dob(seeker.getDob().toString())
-            .address(seeker.getAddress())
-            .cityOrProvince(seeker.getCityOrProvince())
-            .country(seeker.getCountry())
-            .githubAccount(seeker.getGithubAccount())
-            .linkInAccount(seeker.getLinkAccount())
-            .portfolio(seeker.getPortfolio())
-            .uuid(seeker.getUuid())
-        .build();
-
-        // seekerRepository.save(seeker);
-
-        return SeekerDataRespone.builder()
-                .DATA(data)
-                .build();
-        }
+    //     DataRespone data = DataRespone.builder()
+    //         .jobLevel(jobLevel != null ? jobLevel.getName() : null)
+    //         .uuid(seeker.getUuid())
+    //         .email(seeker.getEmail())
+    //         .phoneNumber(seeker.getPhoneNumber())
+    //         .password(seeker.getPhoneNumber())
+    //         .gender(seeker.getGender())
+    //         .profile(seeker.getProfile())
+    //         .workExperienceRequests(workExperienceRespones)
+    //         .address(seeker.getAddress())
+    //         .cityOrProvince(seeker.getCityOrProvince())
+    //         .country(seeker.getCountry())
+    //         .githubAccount(seeker.getGithubAccount())
+    //         .linkInAccount(seeker.getLinkAccount())
+    //         .portfolio(seeker.getPortfolio())
+    //         .uuid(seeker.getUuid())
+    //     .build();
+    //     return SeekerDataRespone.builder()
+    //             .DATA(data)
+    //             .build();
+    //     }
 
     @Override
     public SeekerDataRespone login(LoginRequest loginRequest) {
@@ -241,8 +242,8 @@ public class SeekerServiceImpl implements SeekerService {
             .stream()
             .map(role -> new RoleRespone(
                 role.getUuid(),
-                role.getName(),
-                role.getAlias()
+                role.getAlias(),
+                role.getName()
                 )
             )
             .toList();
@@ -253,19 +254,66 @@ public class SeekerServiceImpl implements SeekerService {
                 ()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"JobLevel not found!")
             );
         }
-        // Set jobLevel only if exists
         seeker.setJobLevel(jobLevel);
 
-        // seeker.setJobLevel(seeker.getJobLevel() != null ? seeker.getJobLevel().getName() : null);
-        // seeker.setJobLevel(jobLevel != null ? jobLevel : null);
+        // ====================================== Education ============================================
+        List<EducationRespone> educationRespones = new ArrayList<>();
+        if (seeker.getSeekerEducations() != null) {
 
-        // DataRespone data = seekerMapper.toDataRespone(seeker);
+            for (SeekerEducation seekerData : seeker.getSeekerEducations()) {
+
+                Education education = seekerData.getEducation();
+                Degree degree = education.getDegree();
+
+                educationRespones.add(
+                    EducationRespone.builder()
+                        .id(education.getId())
+                        .schoolOrUniversity(education.getSchoolOrUniversity())
+                        .degree(degree.getName())
+                        .major(education.getMajor())
+                        .startDate(education.getStartDate())
+                        .endDate(education.getEndDate())
+                        .country(education.getCountry())
+                        .cityOrProvince(education.getCityOrProvince())
+                        .educationDetail(education.getEducationDetail())
+                        .build()
+                );
+            }
+        }
+        // ====================================== Experience ============================================
+        List<WorkExperienceRespone> workExperienceRespones = new ArrayList<>();
+        if(seeker.getSeekerWorkExperiences() != null){
+            for(SeekerWorkExperience expData : seeker.getSeekerWorkExperiences()){
+
+                WorkExperience workExperience = expData.getWorkExperience();
+                JobLevel jobLevelExp = workExperience.getJobLevel();
+                TypeOfExperience typeOfExperience = workExperience.getTypeOfExperience();
+                workExperienceRespones.add(
+                    WorkExperienceRespone.builder()
+                    .id(workExperience.getId())
+                    .jobTitle(workExperience.getJobTittle())
+                    .jobLevel(jobLevelExp.getName())
+                    .company(workExperience.getCompanyName())
+                    .typeOfExperience(typeOfExperience.getName())
+                    .cityOrProvince(workExperience.getCityOrProvince())
+                    .country(workExperience.getCountry())
+                    .startDate(workExperience.getStartDate())
+                    .endDate(workExperience.getEndDate())
+                    .descriptionYourExperience(workExperience.getDescriptionYourExperience())
+                    .build()
+                );
+
+            }
+        }
+
+
         DataRespone data = DataRespone.builder()
+            // Normal Data
             .jobLevel(jobLevel != null ? jobLevel.getName() : null)
             .uuid(seeker.getUuid())
             .email(seeker.getEmail())
             .phoneNumber(seeker.getPhoneNumber())
-            .password(seeker.getPhoneNumber())
+            .fullName(seeker.getFullName())
             .password(seeker.getPassword())
             .gender(seeker.getGender())
             .profile(seeker.getProfile())
@@ -278,6 +326,10 @@ public class SeekerServiceImpl implements SeekerService {
             .linkInAccount(seeker.getLinkAccount())
             .portfolio(seeker.getPortfolio())
             .createdAt(seeker.getCreatedAt())
+            // Data for cv
+            .educationRespones(educationRespones)
+            .workExperienceRespones(workExperienceRespones)
+            /// Security
             .isVerified(seeker.getIsVerified())
             .isBloked(seeker.getIsBloked())
             .isAccountNonExpired(seeker.getIsAccountNonExpired())
@@ -412,28 +464,6 @@ public class SeekerServiceImpl implements SeekerService {
         seeker.setRoles(roles);
         seekerRepository.save(seeker);
 
-        // EmailVerification emailVerification = new EmailVerification();
-        // emailVerification.setVerificationCode(RandomUtil.random6Digits());
-        // emailVerification.setExpiryTime(LocalTime.now().plusMinutes(1));
-        // emailVerification.setSeeker(seeker);
-
-        // emailVerificationRepository.save(emailVerification);
-
-        // String myHtml = String.format("""
-        //     <h1>JobPortal - Email Verification</h1>
-        //     <hr/>
-        //     %s
-        //     """, emailVerification.getVerificationCode()
-        // );
-
-        // MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-        // MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
-        // helper.setSubject("Email Verification From JobPortal");
-        // helper.setTo(seeker.getEmail());
-        // helper.setFrom(myMail);
-        // helper.setText(myHtml,true);
-
-        // javaMailSender.send(mimeMessage);
         EmailVerification emailVerification = new EmailVerification();
         emailVerification.setVerificationCode(RandomUtil.random6Digits());
         emailVerification.setExpiryTime(LocalTime.now().plusMinutes(1));
