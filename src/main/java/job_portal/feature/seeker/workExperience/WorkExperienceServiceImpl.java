@@ -1,10 +1,8 @@
 package job_portal.feature.seeker.workExperience;
 import java.time.LocalDate;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
 import job_portal.domain.backend.seeker.JobLevel;
 import job_portal.domain.backend.seeker.Seeker;
 import job_portal.domain.backend.seeker.SeekerWorkExperience;
@@ -18,10 +16,12 @@ import job_portal.feature.seeker.workExperience.dto.request.UpdateWorkExperience
 import job_portal.feature.seeker.workExperience.dto.respone.WorkExperienceRespone;
 import job_portal.mapper.seeker.WorkExperienceMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class WorkExperienceServiceImpl implements WorkExperienceService{
 
     private final SeekerRepository seekerRepository;
@@ -44,7 +44,25 @@ public class WorkExperienceServiceImpl implements WorkExperienceService{
         WorkExperience workExperience = workExperienceRepository.findById(id).orElseThrow(
             ()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Work Experience not found!")
         );
+        log.info("1: {}",updateWorkExperienceRequest.companyName() );
+        log.info("2: {}",updateWorkExperienceRequest.jobLevel());
+        log.info("3: {}",updateWorkExperienceRequest.typeOfExperience());
+
         workExperienceMapper.fromWorkExperienceUpdateRequest(updateWorkExperienceRequest, workExperience);
+        // if(updateWorkExperienceRequest.jobLevel() != null){
+        //     JobLevel jobLevel = jobLevelRepository.findById(updateWorkExperienceRequest.jobLevel()).orElseThrow(
+        //         ()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Job Level not found!")
+        //     );
+        //     workExperience.setJobLevel(jobLevel);
+        // }
+
+        // if(updateWorkExperienceRequest.typeOfExperience() != null){
+        //     TypeOfExperience typeOfExperience = typeOfExperienceRepository.findById(updateWorkExperienceRequest.typeOfExperience()).orElseThrow(
+        //         ()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Type Of Experience not found!")
+        //     );
+        //     workExperience.setTypeOfExperience(typeOfExperience);
+        // }
+
         workExperience = workExperienceRepository.save(workExperience);
         return workExperienceMapper.toWorkExperienceRespone(workExperience);
     }

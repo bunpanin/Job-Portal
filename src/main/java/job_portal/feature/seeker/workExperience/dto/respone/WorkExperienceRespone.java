@@ -7,7 +7,7 @@ public record WorkExperienceRespone(
     Integer id,
     String jobTittle,
     String jobLevel,
-    String company,
+    String companyName,
     String typeOfExperience,
     String cityOrProvince,
     String country,

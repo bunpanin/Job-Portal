@@ -291,9 +291,9 @@ public class SeekerServiceImpl implements SeekerService {
                 workExperienceRespones.add(
                     WorkExperienceRespone.builder()
                     .id(workExperience.getId())
-                    .jobTitle(workExperience.getJobTittle())
+                    .jobTittle(workExperience.getJobTittle())
                     .jobLevel(jobLevelExp.getName())
-                    .company(workExperience.getCompanyName())
+                    .companyName(workExperience.getCompanyName())
                     .typeOfExperience(typeOfExperience.getName())
                     .cityOrProvince(workExperience.getCityOrProvince())
                     .country(workExperience.getCountry())
@@ -302,7 +302,6 @@ public class SeekerServiceImpl implements SeekerService {
                     .descriptionYourExperience(workExperience.getDescriptionYourExperience())
                     .build()
                 );
-
             }
         }
 

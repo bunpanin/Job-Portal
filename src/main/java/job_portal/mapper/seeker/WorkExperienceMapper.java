@@ -17,9 +17,9 @@ public interface WorkExperienceMapper {
     @Mapping(target = "typeOfExperience", ignore = true)
     WorkExperienceRespone toWorkExperienceRespone(WorkExperience workExperience);
 
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "jobLevel", ignore = true)
     @Mapping(target = "typeOfExperience", ignore = true)
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void fromWorkExperienceUpdateRequest(UpdateWorkExperienceRequest updateWorkExperienceRequest, @MappingTarget WorkExperience workExperience);
 
     @Mapping(target = "jobLevel", ignore = true)
