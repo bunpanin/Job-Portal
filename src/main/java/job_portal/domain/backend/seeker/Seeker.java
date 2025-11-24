@@ -2,6 +2,8 @@ package job_portal.domain.backend.seeker;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -13,6 +15,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import job_portal.domain.backend.Role;
 import lombok.Getter;
@@ -55,8 +58,12 @@ public class Seeker {
     private String linkAccount;
     private String portfolio;
 
-    @OneToMany(mappedBy = "seeker")
-    private List<SeekerWorkExperience> seekerWorkExperiences;
+    // @OneToMany(mappedBy = "seeker")
+    // private List<SeekerWorkExperience> seekerWorkExperiences;
+
+    @OneToMany(mappedBy = "seeker",cascade = CascadeType.ALL)
+    @OrderBy("id DESC")
+    private List<WorkExperience> workExperiences;
 
     @OneToMany(mappedBy = "seeker")
     private List<SeekerEducation> seekerEducations;
@@ -79,12 +86,8 @@ public class Seeker {
     private Boolean isDeleted;
     // can i use  role "seeker"
     @ManyToMany(fetch = FetchType.EAGER)
-
     @JoinTable(joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
         inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private List<Role> roles;
 
-
-
-    
 }
