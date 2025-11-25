@@ -49,19 +49,19 @@ public class WorkExperienceServiceImpl implements WorkExperienceService{
         log.info("3: {}",updateWorkExperienceRequest.typeOfExperience());
 
         workExperienceMapper.fromWorkExperienceUpdateRequest(updateWorkExperienceRequest, workExperience);
-        // if(updateWorkExperienceRequest.jobLevel() != null){
-        //     JobLevel jobLevel = jobLevelRepository.findById(updateWorkExperienceRequest.jobLevel()).orElseThrow(
-        //         ()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Job Level not found!")
-        //     );
-        //     workExperience.setJobLevel(jobLevel);
-        // }
+            // 2. Update JobLevel (because mapsper ignores it)
+    if (updateWorkExperienceRequest.jobLevel() != null) {
+        JobLevel jobLevel = jobLevelRepository.findById(updateWorkExperienceRequest.jobLevel())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Job Level not found"));
+        workExperience.setJobLevel(jobLevel);
+    }
 
-        // if(updateWorkExperienceRequest.typeOfExperience() != null){
-        //     TypeOfExperience typeOfExperience = typeOfExperienceRepository.findById(updateWorkExperienceRequest.typeOfExperience()).orElseThrow(
-        //         ()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Type Of Experience not found!")
-        //     );
-        //     workExperience.setTypeOfExperience(typeOfExperience);
-        // }
+    // 3. Update TypeOfExperience
+    if (updateWorkExperienceRequest.typeOfExperience() != null) {
+        TypeOfExperience type = typeOfExperienceRepository.findById(updateWorkExperienceRequest.typeOfExperience())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Type of Experience not found"));
+        workExperience.setTypeOfExperience(type);
+    }
 
         workExperience = workExperienceRepository.save(workExperience);
         return workExperienceMapper.toWorkExperienceRespone(workExperience);

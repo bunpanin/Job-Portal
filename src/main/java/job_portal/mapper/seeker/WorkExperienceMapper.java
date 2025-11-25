@@ -4,7 +4,6 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
-
 import job_portal.domain.backend.seeker.WorkExperience;
 import job_portal.feature.seeker.workExperience.dto.request.CreateWorkExperienceRequest;
 import job_portal.feature.seeker.workExperience.dto.request.UpdateWorkExperienceRequest;
