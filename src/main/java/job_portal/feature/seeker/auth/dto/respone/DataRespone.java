@@ -2,6 +2,7 @@ package job_portal.feature.seeker.auth.dto.respone;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import job_portal.feature.seeker.achievement.dto.respone.AchievementRespone;
 import job_portal.feature.seeker.education.dto.respone.EducationRespone;
 import job_portal.feature.seeker.role.dto.respone.RoleRespone;
 import job_portal.feature.seeker.workExperience.dto.respone.WorkExperienceRespone;
@@ -25,10 +26,9 @@ public record DataRespone(
     String linkInAccount,
     String portfolio,
     List<RoleRespone> roles,
-    List<WorkExperienceRespone> workExperienceRespones,
-    List<EducationRespone> educationRespones,
-    // String education,
-    // String achievement,
+    List<WorkExperienceRespone> workExperiences,
+    List<EducationRespone> educations,
+    List<AchievementRespone> achievements,
     // String skill,
     // String role,
     // String language,

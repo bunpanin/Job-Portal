@@ -1,5 +1,6 @@
 package job_portal.domain.backend.seeker;
 import java.time.LocalDate;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -15,31 +16,26 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "educations")
-public class Education {
-    @Id
+@Table(name = "achievements")
+public class Achievement {
+
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
     private Integer id;
-    @Column(nullable = false, length = 150)
-    private String schoolOrUniversity;
 
-    @ManyToOne
-    private Degree degree;
+    @Column(nullable = false)
+    private String achievementTittle;
 
-    @Column(nullable = false, length = 150)
-    private String major;
-    @Column(nullable = false, length = 50)
-    private String country;
-    @Column(nullable = false, length = 50)
-    private String cityOrProvince;
     @Column(nullable = false)
-    private LocalDate startDate;
-    @Column(nullable = false)
-    private LocalDate endDate;
+    private LocalDate date;
+
     @Column(nullable = false, columnDefinition = "TEXT")
-    private String educationDetail;
+    private String achievementDetail;
 
-    // @OneToMany(mappedBy = "education", cascade = CascadeType.REMOVE)
+    @Column(nullable = false)
+    private LocalDate createdAt;
+
     @ManyToOne
     private Seeker seeker;
+    
 }

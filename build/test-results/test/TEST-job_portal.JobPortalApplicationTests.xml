@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<<<<<<< HEAD
 <testsuite name="job_portal.JobPortalApplicationTests" tests="1" skipped="0" failures="1" errors="0" timestamp="2025-11-23T15:07:49.888Z" hostname="DESKTOP-BGQCMLA" time="0.008">
   <properties/>
   <testcase name="contextLoads()" classname="job_portal.JobPortalApplicationTests" time="0.008">
@@ -78,6 +79,13 @@ Caused by: org.hibernate.HibernateException: Unable to determine Dialect without
   </testcase>
   <system-out><![CDATA[22:07:36.295 [Test worker] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [job_portal.JobPortalApplicationTests]: JobPortalApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
 22:07:36.402 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration job_portal.JobPortalApplication for test class job_portal.JobPortalApplicationTests
+=======
+<testsuite name="job_portal.JobPortalApplicationTests" tests="1" skipped="0" failures="0" errors="0" timestamp="2025-11-25T08:57:32.061Z" hostname="Bun-Panin.local" time="0.563">
+  <properties/>
+  <testcase name="contextLoads()" classname="job_portal.JobPortalApplicationTests" time="0.563"/>
+  <system-out><![CDATA[15:57:24.216 [Test worker] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [job_portal.JobPortalApplicationTests]: JobPortalApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+15:57:24.325 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration job_portal.JobPortalApplication for test class job_portal.JobPortalApplicationTests
+>>>>>>> 78482adc2496572cfbb470040180bd289ef8b59a
 
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
@@ -88,6 +96,7 @@ Caused by: org.hibernate.HibernateException: Unable to determine Dialect without
 
  :: Spring Boot ::                (v3.5.7)
 
+<<<<<<< HEAD
 2025-11-23T22:07:36.727+07:00  INFO 28252 --- [job-portal] [    Test worker] job_portal.JobPortalApplicationTests     : Starting JobPortalApplicationTests using Java 21.0.8 with PID 28252 (started by PANIN BAYCHA in D:\Years 4\SANA\Job-Portal)
 2025-11-23T22:07:36.728+07:00  INFO 28252 --- [job-portal] [    Test worker] job_portal.JobPortalApplicationTests     : No active profile set, falling back to 1 default profile: "default"
 2025-11-23T22:07:37.522+07:00  INFO 28252 --- [job-portal] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
@@ -562,6 +571,32 @@ Caused by: org.hibernate.HibernateException: Unable to determine Dialect without
 	at org.hibernate.service.internal.AbstractServiceRegistryImpl.createService(AbstractServiceRegistryImpl.java:263) ~[hibernate-core-6.6.33.Final.jar:6.6.33.Final]
 	... 126 common frames omitted
 
+=======
+2025-11-25T15:57:24.755+07:00  INFO 4931 --- [job-portal] [    Test worker] job_portal.JobPortalApplicationTests     : Starting JobPortalApplicationTests using Java 21.0.8 with PID 4931 (started by citu in /Users/citu/Documents/ITO_Panin/spring/job-portal)
+2025-11-25T15:57:24.758+07:00  INFO 4931 --- [job-portal] [    Test worker] job_portal.JobPortalApplicationTests     : No active profile set, falling back to 1 default profile: "default"
+2025-11-25T15:57:25.833+07:00  INFO 4931 --- [job-portal] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-11-25T15:57:25.939+07:00  INFO 4931 --- [job-portal] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 95 ms. Found 8 JPA repository interfaces.
+2025-11-25T15:57:26.506+07:00  INFO 4931 --- [job-portal] [    Test worker] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-11-25T15:57:26.563+07:00  INFO 4931 --- [job-portal] [    Test worker] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.33.Final
+2025-11-25T15:57:26.609+07:00  INFO 4931 --- [job-portal] [    Test worker] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-11-25T15:57:26.936+07:00  INFO 4931 --- [job-portal] [    Test worker] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-11-25T15:57:26.963+07:00  INFO 4931 --- [job-portal] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-11-25T15:57:27.147+07:00  INFO 4931 --- [job-portal] [    Test worker] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@1ba7db2a
+2025-11-25T15:57:27.150+07:00  INFO 4931 --- [job-portal] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-11-25T15:57:27.210+07:00  INFO 4931 --- [job-portal] [    Test worker] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 16.3
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-11-25T15:57:28.378+07:00  INFO 4931 --- [job-portal] [    Test worker] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-11-25T15:57:29.067+07:00  INFO 4931 --- [job-portal] [    Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-11-25T15:57:29.903+07:00  WARN 4931 --- [job-portal] [    Test worker] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-11-25T15:57:30.000+07:00  INFO 4931 --- [job-portal] [    Test worker] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name seekerDetailServiceImpl
+2025-11-25T15:57:32.047+07:00  INFO 4931 --- [job-portal] [    Test worker] job_portal.JobPortalApplicationTests     : Started JobPortalApplicationTests in 7.583 seconds (process running for 8.912)
+>>>>>>> 78482adc2496572cfbb470040180bd289ef8b59a
 ]]></system-out>
   <system-err><![CDATA[
 

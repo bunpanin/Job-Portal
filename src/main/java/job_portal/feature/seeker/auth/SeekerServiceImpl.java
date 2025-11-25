@@ -4,7 +4,9 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,15 +20,10 @@ import org.springframework.web.server.ResponseStatusException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import job_portal.domain.backend.Role;
-import job_portal.domain.backend.seeker.Degree;
-import job_portal.domain.backend.seeker.Education;
 import job_portal.domain.backend.seeker.EmailVerification;
 import job_portal.domain.backend.seeker.JobLevel;
 import job_portal.domain.backend.seeker.Seeker;
-import job_portal.domain.backend.seeker.SeekerEducation;
-import job_portal.domain.backend.seeker.SeekerWorkExperience;
-import job_portal.domain.backend.seeker.TypeOfExperience;
-import job_portal.domain.backend.seeker.WorkExperience;
+import job_portal.feature.seeker.achievement.dto.respone.AchievementRespone;
 import job_portal.feature.seeker.auth.dto.request.EmailRequest;
 import job_portal.feature.seeker.auth.dto.request.RegisterRequest;
 import job_portal.feature.seeker.auth.dto.request.VerifyRequest;
@@ -34,15 +31,10 @@ import job_portal.feature.seeker.auth.dto.respone.DataRespone;
 import job_portal.feature.seeker.auth.dto.respone.JwtRespone;
 import job_portal.feature.seeker.auth.dto.respone.LoginRequest;
 import job_portal.feature.seeker.auth.dto.respone.SeekerDataRespone;
-import job_portal.feature.seeker.degree.DegreeRepository;
-import job_portal.feature.seeker.education.EducationRepository;
 import job_portal.feature.seeker.education.dto.respone.EducationRespone;
 import job_portal.feature.seeker.jobLevel.JobLevelRepository;
 import job_portal.feature.seeker.role.RoleRepository;
 import job_portal.feature.seeker.role.dto.respone.RoleRespone;
-import job_portal.feature.seeker.typeOfExperience.TypeOfExperienceRepository;
-import job_portal.feature.seeker.workExperience.SeekerWorkExperienceRepository;
-import job_portal.feature.seeker.workExperience.WorkExperienceRepository;
 import job_portal.feature.seeker.workExperience.dto.respone.WorkExperienceRespone;
 import job_portal.mapper.seeker.SeekerMapper;
 import job_portal.util.MailHtmlUtil;
@@ -69,11 +61,11 @@ public class SeekerServiceImpl implements SeekerService {
     private final RoleRepository roleRepository;
     private final JobLevelRepository jobLevelRepository;
     private final AuthenticationManager authProvider;
-    private final TypeOfExperienceRepository typeOfExperienceRepository;
-    private final SeekerWorkExperienceRepository seekerWorkExperienceRepository;
-    private final WorkExperienceRepository workExperienceRepository;
-    private final DegreeRepository degreeRepository;
-    private final EducationRepository educationRepository;
+    // private final TypeOfExperienceRepository typeOfExperienceRepository;
+    // private final SeekerWorkExperienceRepository seekerWorkExperienceRepository;
+    // private final WorkExperienceRepository workExperienceRepository;
+    // private final DegreeRepository degreeRepository;
+    // private final EducationRepository educationRepository;
 
     // Mail Config
     private final EmailVerificationRepository emailVerificationRepository;
@@ -198,6 +190,10 @@ public class SeekerServiceImpl implements SeekerService {
 
         Instant now = Instant.now();
 
+        Seeker seeker = seekerRepository.findByEmail(loginRequest.email()).orElseThrow(
+            ()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Seeker not found!")
+        );
+
         // Create access token claims set
         JwtClaimsSet jwtClaimsSet = JwtClaimsSet.builder()
             .id(auth.getName())
@@ -206,6 +202,8 @@ public class SeekerServiceImpl implements SeekerService {
             .audience(List.of("nextjs", "reactjs"))
             .subject("Access Token")
             .expiresAt(now.plus(30, ChronoUnit.MINUTES))
+            .claim("userId", seeker.getId())
+            .claim("email", seeker.getEmail())
             .claim("scope", scope)
             .build();
 
@@ -235,8 +233,8 @@ public class SeekerServiceImpl implements SeekerService {
             .refreshToken(refreshToken)
             .build();
         
-        Seeker seeker = seekerRepository.findByEmail(loginRequest.email())
-            .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"Seeker not found!"));
+        // Seeker seeker = seekerRepository.findByEmail(loginRequest.email())
+        //     .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"Seeker not found!"));
 
         List<RoleRespone> roleRespones = seeker.getRoles()
             .stream()
@@ -257,57 +255,55 @@ public class SeekerServiceImpl implements SeekerService {
         seeker.setJobLevel(jobLevel);
 
         // ====================================== Education ============================================
-        List<EducationRespone> educationRespones = new ArrayList<>();
-        if (seeker.getSeekerEducations() != null) {
-
-            for (SeekerEducation seekerData : seeker.getSeekerEducations()) {
-
-                Education education = seekerData.getEducation();
-                Degree degree = education.getDegree();
-
-                educationRespones.add(
-                    EducationRespone.builder()
+        List<EducationRespone> educations = Optional.ofNullable(seeker.getEducations())
+            .orElse(Collections.emptyList())
+            .stream()
+            .map(education ->
+                EducationRespone.builder()
                         .id(education.getId())
                         .schoolOrUniversity(education.getSchoolOrUniversity())
-                        .degree(degree.getName())
+                        .degree(education.getDegree().getName())
                         .major(education.getMajor())
                         .startDate(education.getStartDate())
                         .endDate(education.getEndDate())
                         .country(education.getCountry())
                         .cityOrProvince(education.getCityOrProvince())
                         .educationDetail(education.getEducationDetail())
-                        .build()
-                );
-            }
-        }
+                .build()
+            ).toList();
         // ====================================== Experience ============================================
-        List<WorkExperienceRespone> workExperienceRespones = new ArrayList<>();
-        if(seeker.getSeekerWorkExperiences() != null){
-            for(SeekerWorkExperience expData : seeker.getSeekerWorkExperiences()){
-
-                WorkExperience workExperience = expData.getWorkExperience();
-                JobLevel jobLevelExp = workExperience.getJobLevel();
-                TypeOfExperience typeOfExperience = workExperience.getTypeOfExperience();
-                workExperienceRespones.add(
-                    WorkExperienceRespone.builder()
-                    .id(workExperience.getId())
-                    .jobTittle(workExperience.getJobTittle())
-                    .jobLevel(jobLevelExp.getName())
-                    .companyName(workExperience.getCompanyName())
-                    .typeOfExperience(typeOfExperience.getName())
-                    .cityOrProvince(workExperience.getCityOrProvince())
-                    .country(workExperience.getCountry())
-                    .startDate(workExperience.getStartDate())
-                    .endDate(workExperience.getEndDate())
-                    .descriptionYourExperience(workExperience.getDescriptionYourExperience())
+        List<WorkExperienceRespone> workExperiences =
+        Optional.ofNullable(seeker.getWorkExperiences())
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(work -> WorkExperienceRespone.builder()
+                    .id(work.getId())
+                    .jobTittle(work.getJobTittle())
+                    .jobLevel(work.getJobLevel().getName())
+                    .companyName(work.getCompanyName())
+                    .typeOfExperience(work.getTypeOfExperience().getName())
+                    .cityOrProvince(work.getCityOrProvince())
+                    .country(work.getCountry())
+                    .startDate(work.getStartDate())
+                    .endDate(work.getEndDate())
+                    .descriptionYourExperience(work.getDescriptionYourExperience())
                     .build()
-                );
-            }
-        }
-
+                )
+                .toList();
+        // ====================================== Achievement ============================================\
+        List<AchievementRespone> achievements = Optional.ofNullable(seeker.getAchievements())
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(achieve ->
+                    AchievementRespone.builder()
+                    .id(achieve.getId())
+                    .achievementTittle(achieve.getAchievementTittle())
+                    .date(achieve.getDate())
+                    .achievementDetail(achieve.getAchievementDetail())
+                    .build()
+                ).toList();
 
         DataRespone data = DataRespone.builder()
-            // Normal Data
             .jobLevel(jobLevel != null ? jobLevel.getName() : null)
             .uuid(seeker.getUuid())
             .email(seeker.getEmail())
@@ -326,8 +322,9 @@ public class SeekerServiceImpl implements SeekerService {
             .portfolio(seeker.getPortfolio())
             .createdAt(seeker.getCreatedAt())
             // Data for cv
-            .educationRespones(educationRespones)
-            .workExperienceRespones(workExperienceRespones)
+            .educations(educations)
+            .workExperiences(workExperiences)
+            .achievements(achievements)
             /// Security
             .isVerified(seeker.getIsVerified())
             .isBloked(seeker.getIsBloked())
