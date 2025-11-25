@@ -29,13 +29,17 @@ public class WorkExperienceServiceImpl implements WorkExperienceService{
     private final WorkExperienceRepository workExperienceRepository;
     private final WorkExperienceMapper workExperienceMapper;
     private final JwtService jwtService;
-    // private final SeekerWorkExperienceRepository seekerWorkExperienceRepository;
 
     @Override
     public void deleteById(Integer id) {
+        Long seekerId = jwtService.extractUserId();
         WorkExperience workExperience = workExperienceRepository.findById(id).orElseThrow(
             ()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Work Experience not found!")
         );
+        if (!workExperience.getSeeker().getId().equals(seekerId.intValue())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                "You do not update this education");
+        }
         workExperienceRepository.delete(workExperience);
     }
 
@@ -43,12 +47,18 @@ public class WorkExperienceServiceImpl implements WorkExperienceService{
     public WorkExperienceRespone updateById(Integer id, UpdateWorkExperienceRequest updateWorkExperienceRequest) {
         Long seekerId = jwtService.extractUserId();
          log.info("1: {}",seekerId);
+        // Seeker seeker = seekerRepository.findById(seekerId.intValue()).orElseThrow(
+        //     ()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Seeker not found!")
+        // );
+
         WorkExperience workExperience = workExperienceRepository.findById(id).orElseThrow(
             ()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Work Experience not found!")
         );
-        // log.info("1: {}",updateWorkExperienceRequest.companyName() );
-        // log.info("2: {}",updateWorkExperienceRequest.jobLevel());
-        // log.info("3: {}",updateWorkExperienceRequest.typeOfExperience());
+
+        if (!workExperience.getSeeker().getId().equals(seekerId.intValue())) {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                "You do not update this work experience");
+        }
 
         workExperienceMapper.fromWorkExperienceUpdateRequest(updateWorkExperienceRequest, workExperience);
         if(updateWorkExperienceRequest.jobLevel() != null){
@@ -70,9 +80,7 @@ public class WorkExperienceServiceImpl implements WorkExperienceService{
 
     @Override
     public void createNewExperience(String uuid, CreateWorkExperienceRequest createWorkExperienceRequest) {
-          Long seekerId = jwtService.extractUserId();
-         log.info("1: {}",seekerId);
-        
+
         Seeker seeker = seekerRepository.findByUuid(uuid).orElseThrow(
             ()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Seeker not found!")
         );

@@ -26,7 +26,6 @@ public class WorkExperienceController {
     @PreAuthorize("hasAnyAuthority('ROLE_SEEKER', 'ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     void deleteById(@PathVariable Integer id){
-        // educationService.deleteById(id);
         workExperienceService.deleteById(id);
     }
 

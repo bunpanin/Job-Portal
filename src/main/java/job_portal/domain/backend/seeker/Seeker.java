@@ -65,8 +65,9 @@ public class Seeker {
     @OrderBy("id DESC")
     private List<WorkExperience> workExperiences;
 
-    @OneToMany(mappedBy = "seeker")
-    private List<SeekerEducation> seekerEducations;
+    @OneToMany(mappedBy = "seeker",cascade = CascadeType.ALL)
+    @OrderBy("id DESC")
+    private List<Education> educations;
 
     private String education;
     private String achievement;
