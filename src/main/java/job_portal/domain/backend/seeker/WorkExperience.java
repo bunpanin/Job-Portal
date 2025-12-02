@@ -49,6 +49,4 @@ public class WorkExperience {
     private Seeker seeker;
     // @OneToMany(mappedBy = "workExperience")
     // private List<SeekerWorkExperience> seekerWorkExperiences;
-
-
 }

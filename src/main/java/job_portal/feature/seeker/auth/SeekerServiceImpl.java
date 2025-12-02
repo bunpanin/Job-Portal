@@ -302,6 +302,7 @@ public class SeekerServiceImpl implements SeekerService {
                     .achievementDetail(achieve.getAchievementDetail())
                     .build()
                 ).toList();
+        // ====================================== Language ============================================\
 
         DataRespone data = DataRespone.builder()
             .jobLevel(jobLevel != null ? jobLevel.getName() : null)

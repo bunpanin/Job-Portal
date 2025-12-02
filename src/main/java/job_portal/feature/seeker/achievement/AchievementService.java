@@ -1,5 +1,4 @@
 package job_portal.feature.seeker.achievement;
-
 import job_portal.feature.seeker.achievement.dto.request.CreateAchievementRequest;
 import job_portal.feature.seeker.achievement.dto.request.UpdateAchievementRequest;
 

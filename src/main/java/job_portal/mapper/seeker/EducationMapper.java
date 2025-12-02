@@ -4,7 +4,6 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
-
 import job_portal.domain.backend.seeker.Education;
 import job_portal.feature.seeker.education.dto.request.CreateEductionRequest;
 import job_portal.feature.seeker.education.dto.request.UpdateEducationRequest;
@@ -15,9 +14,13 @@ public interface EducationMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "degree", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "seeker", ignore = true)
     void fromEducationUpdateRequest(UpdateEducationRequest updateEducationRequest, @MappingTarget Education education);
 
     @Mapping(target = "degree", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "seeker", ignore = true)
     Education fromCreateNewEducation(CreateEductionRequest createEductionRequest);
 
     @Mapping(target = "degree", ignore = true)

@@ -14,31 +14,28 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
 @Setter
+@Getter
 @NoArgsConstructor
+@Entity
 @Builder
 @AllArgsConstructor
-@Entity
-@Table(name = "degrees")
-public class Degree {
-
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+@Table(name = "language_levels")
+public class LanguageLevel {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 50)
     private String alias;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 25)
     private String name;
 
-    @Column(nullable = false)
+    
+    private Boolean isDeleted;
     private LocalDate createdAt;
 
-    @Column(nullable = false)
-    private Boolean isDeleted;
-
-    @OneToMany(mappedBy = "degree")
-    private List<Education> educations;
+    @OneToMany(mappedBy = "languageLevel")
+    private List<Language> languages;
 }

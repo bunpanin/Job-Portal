@@ -19,13 +19,14 @@ public interface WorkExperienceMapper {
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "jobLevel", ignore = true)
     @Mapping(target = "typeOfExperience", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "seeker", ignore = true)
     void fromWorkExperienceUpdateRequest(UpdateWorkExperienceRequest updateWorkExperienceRequest, @MappingTarget WorkExperience workExperience);
 
     @Mapping(target = "jobLevel", ignore = true)
     @Mapping(target = "typeOfExperience", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "seeker", ignore = true)
     WorkExperience fromCreateNewWorkExperience(CreateWorkExperienceRequest createWorkExperienceRequest);
 
-
-
-    
 }

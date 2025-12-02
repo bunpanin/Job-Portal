@@ -1,10 +1,8 @@
 package job_portal.feature.seeker.achievement;
 import java.time.LocalDate;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
 import job_portal.domain.backend.seeker.Achievement;
 import job_portal.domain.backend.seeker.Seeker;
 import job_portal.feature.seeker.achievement.dto.request.CreateAchievementRequest;
@@ -31,7 +29,7 @@ public class AchievementServiceImpl implements AchievementService {
         );
         if(!achievement.getSeeker().getId().equals(seekerId.intValue())){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                "You do not update this Achievement");
+                "You do not dalete this Achievement");
         }
         achievementRepository.delete(achievement);
     }
@@ -55,7 +53,7 @@ public class AchievementServiceImpl implements AchievementService {
     public void createNewAchievement(String uuid, CreateAchievementRequest createAchievementRequest) {
         Seeker seeker = seekerRepository.findByUuid(uuid)
             .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Seeker not found!"));
-        Achievement achievement = achievementMapper.fromCreateNewAchievement(createAchievementRequest);
+        Achievement achievement = achievementMapper.fromCreateAchievement(createAchievementRequest);
         achievement.setCreatedAt(LocalDate.now());
         achievement.setSeeker(seeker);
         achievementRepository.save(achievement);

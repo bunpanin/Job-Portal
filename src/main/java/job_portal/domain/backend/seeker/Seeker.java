@@ -2,7 +2,6 @@ package job_portal.domain.backend.seeker;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -72,6 +71,14 @@ public class Seeker {
     @OneToMany(mappedBy = "seeker",cascade = CascadeType.ALL)
     @OrderBy("id DESC")
     private List<Achievement> achievements;
+
+    @OneToMany(mappedBy = "seeker", cascade = CascadeType.ALL)
+    @OrderBy("id DESC")
+    private List<SeekerReference> references;
+
+    @OneToMany(mappedBy = "seeker", cascade = CascadeType.ALL)
+    @OrderBy("id DESC")
+    private List<Language> languages;
 
     private String education;
     private String achievement;

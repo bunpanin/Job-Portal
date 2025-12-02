@@ -8,9 +8,11 @@ import jakarta.annotation.PostConstruct;
 import job_portal.domain.backend.Role;
 import job_portal.domain.backend.seeker.Degree;
 import job_portal.domain.backend.seeker.JobLevel;
+import job_portal.domain.backend.seeker.LanguageLevel;
 import job_portal.domain.backend.seeker.TypeOfExperience;
 import job_portal.feature.seeker.degree.DegreeRepository;
 import job_portal.feature.seeker.jobLevel.JobLevelRepository;
+import job_portal.feature.seeker.languageLevel.LanguageLevelRepository;
 import job_portal.feature.seeker.typeOfExperience.TypeOfExperienceRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -22,6 +24,7 @@ public class DataInit {
     private final JobLevelRepository jobLevelRepository;
     private final TypeOfExperienceRepository typeOfExperienceRepository;
     private final DegreeRepository degreeRepository;
+    private final LanguageLevelRepository languageLevelRepository;
 
     @PostConstruct
     void init(){
@@ -29,7 +32,46 @@ public class DataInit {
         initJobLevelData();
         initTypeOfExperienceData();
         initDegreeData();
+        initLanguageLevel();
     }
+
+    private void initLanguageLevel(){
+        List<LanguageLevel> languageLevels = new ArrayList<>();
+        languageLevels.add(
+            LanguageLevel.builder()
+            .name("Beginner")
+            .alias("beginner")
+            .createdAt(LocalDate.now())
+            .isDeleted(false)
+            .build()
+        );
+        languageLevels.add(
+            LanguageLevel.builder()
+            .name("Intermediate")
+            .alias("intermediate")
+            .createdAt(LocalDate.now())
+            .isDeleted(false)
+            .build()
+        );
+        languageLevels.add(
+            LanguageLevel.builder()
+            .name("Advanced")
+            .alias("advanced")
+            .createdAt(LocalDate.now())
+            .isDeleted(false)
+            .build()
+        );
+        languageLevels.add(
+            LanguageLevel.builder()
+            .name("Native")
+            .alias("native")
+            .createdAt(LocalDate.now())
+            .isDeleted(false)
+            .build()
+        );
+        languageLevelRepository.saveAll(languageLevels);
+    }
+
 
     private void initDegreeData(){
         List<Degree> degrees = new ArrayList<>();

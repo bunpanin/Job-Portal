@@ -15,26 +15,23 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "achievements")
-public class Achievement {
-
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+@Table(name = "languages")
+public class Language {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false)
-    private String achievementTittle;
-
-    @Column(nullable = false)
-    private LocalDate date;
-
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String achievementDetail;
+    @Column(nullable = false, length = 50)
+    private String languageName;
 
     @Column(nullable = false)
     private LocalDate createdAt;
 
     @ManyToOne
+    private LanguageLevel languageLevel;
+
+    @ManyToOne
     private Seeker seeker;
-    
+
+
 }
