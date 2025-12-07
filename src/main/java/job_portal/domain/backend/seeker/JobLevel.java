@@ -38,7 +38,6 @@ public class JobLevel {
     private Boolean isDeleted;
     private LocalDate createdAt;
 
-    // Reletionship Table
 
     @OneToMany(mappedBy = "jobLevel")
     private List<Seeker> seekers;

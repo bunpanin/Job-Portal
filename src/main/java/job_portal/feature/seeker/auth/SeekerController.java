@@ -1,10 +1,9 @@
 package job_portal.feature.seeker.auth;
+import job_portal.domain.backend.seeker.Seeker;
+import job_portal.feature.seeker.auth.dto.request.SeekerUpdateRequest;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import job_portal.feature.seeker.auth.dto.request.EmailRequest;
@@ -21,11 +20,17 @@ public class SeekerController {
 
     private final SeekerService seekerService;
 
-    // @PutMapping("/update/{uuid}")
-    // @ResponseStatus(HttpStatus.OK)
-    // SeekerDataRespone update(@Valid @PathVariable String uuid, @RequestBody SeekerUpdateRequest seekerUpdateRequest){
-    //     return seekerService.updateByUuid(uuid, seekerUpdateRequest);
-    // }
+//     @PutMapping("/update/{uuid}")
+//     @ResponseStatus(HttpStatus.OK)
+//     SeekerDataRespone update(@Valid @PathVariable String uuid, @RequestBody SeekerUpdateRequest seekerUpdateRequest){
+//         return seekerService.updateByUuid(uuid, seekerUpdateRequest);
+//     }
+    @PatchMapping("/{uuid}")
+    @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasAuthority('ROLE_SEEKER')")
+    void updateSeeker(@PathVariable String uuid, @Valid @RequestBody SeekerUpdateRequest  seekerUpdateRequest) {
+        seekerService.updateSeekerByUuid(uuid, seekerUpdateRequest);
+    }
 
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)

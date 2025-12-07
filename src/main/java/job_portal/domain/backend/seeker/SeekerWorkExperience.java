@@ -11,7 +11,7 @@
 // import lombok.Getter;
 // import lombok.NoArgsConstructor;
 // import lombok.Setter;
-
+//
 // @Getter
 // @Setter
 // @NoArgsConstructor
@@ -23,12 +23,12 @@
 //     @Id
 //     @GeneratedValue(strategy = GenerationType.IDENTITY)
 //     private Integer id;
-
+//
 //     @ManyToOne
 //     private Seeker seeker;
-
+//
 //     @ManyToOne
 //     private WorkExperience workExperience;
-
-//     private LocalDate createdAt;    
+//
+//     private LocalDate createdAt;
 // }

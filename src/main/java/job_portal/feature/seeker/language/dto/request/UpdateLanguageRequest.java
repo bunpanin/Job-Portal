@@ -1,4 +1,4 @@
-package job_portal.feature.seeker.language.dto;
+package job_portal.feature.seeker.language.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

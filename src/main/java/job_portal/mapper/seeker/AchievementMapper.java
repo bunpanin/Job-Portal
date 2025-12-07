@@ -22,6 +22,4 @@ public interface AchievementMapper {
     Achievement fromCreateAchievement(CreateAchievementRequest createAchievementRequest);
 
     AchievementRespone toAchievementRespone(Achievement achievement);
-
-    
 }

@@ -56,9 +56,8 @@ public class Seeker {
     private String githubAccount;
     private String linkAccount;
     private String portfolio;
-
-    // @OneToMany(mappedBy = "seeker")
-    // private List<SeekerWorkExperience> seekerWorkExperiences;
+    @Column(columnDefinition = "TEXT")
+    private String cvFile;
 
     @OneToMany(mappedBy = "seeker",cascade = CascadeType.ALL)
     @OrderBy("id DESC")
@@ -80,11 +79,11 @@ public class Seeker {
     @OrderBy("id DESC")
     private List<Language> languages;
 
-    private String education;
-    private String achievement;
-    private String skill;
-    private String language;
-    private String reference;
+//    private String education;
+//    private String achievement;
+//    private String skill;
+//    private String language;
+//    private String reference;
 
     @Column(columnDefinition = "TEXT")
     private String descriptionYourSelf;

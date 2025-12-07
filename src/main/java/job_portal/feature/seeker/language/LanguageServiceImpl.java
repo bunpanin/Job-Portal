@@ -9,8 +9,8 @@ import job_portal.domain.backend.seeker.Language;
 import job_portal.domain.backend.seeker.LanguageLevel;
 import job_portal.domain.backend.seeker.Seeker;
 import job_portal.feature.seeker.auth.SeekerRepository;
-import job_portal.feature.seeker.language.dto.CreateLanguageRequest;
-import job_portal.feature.seeker.language.dto.UpdateLanguageRequest;
+import job_portal.feature.seeker.language.dto.request.CreateLanguageRequest;
+import job_portal.feature.seeker.language.dto.request.UpdateLanguageRequest;
 import job_portal.feature.seeker.languageLevel.LanguageLevelRepository;
 import job_portal.mapper.seeker.LanguageMapper;
 import job_portal.security.JwtService;
@@ -36,7 +36,7 @@ public class LanguageServiceImpl implements LanguageService{
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You do not delete this language");
         }
         languageRepository.delete(language);
-    }   
+    }
 
     @Override
     public void updateById(Integer id, UpdateLanguageRequest updateLanguageRequest) {
@@ -67,7 +67,6 @@ public class LanguageServiceImpl implements LanguageService{
         LanguageLevel languageLevel = languageLevelRepository.findById(createLanguageRequest.languageLevel()).orElseThrow(
             ()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Languag Level not found!")
         );
-
         Language language = languageMapper.fromCreateNewLanguage(createLanguageRequest);
         language.setSeeker(seeker);
         language.setLanguageLevel(languageLevel);

@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
-import job_portal.feature.seeker.language.dto.CreateLanguageRequest;
-import job_portal.feature.seeker.language.dto.UpdateLanguageRequest;
+import job_portal.feature.seeker.language.dto.request.CreateLanguageRequest;
+import job_portal.feature.seeker.language.dto.request.UpdateLanguageRequest;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -43,5 +43,4 @@ public class LanguageController {
     void createNew(@PathVariable String uuid,@Valid @RequestBody CreateLanguageRequest createLanguageRequest){
         languageService.createNewLanguage(uuid, createLanguageRequest);
     }
-
 }
