@@ -8,7 +8,6 @@
      String email,
      String phoneNumber,
      String gender,
-     String profile,
      LocalDate dob,
      Integer jobLevel,
      String address,

@@ -1,6 +1,8 @@
 package job_portal.security;
 import java.util.Collection;
 import java.util.List;
+
+import job_portal.domain.backend.company.Company;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -15,6 +17,7 @@ import lombok.Setter;
 public class CustomUserDetails implements UserDetails {
 
     private Seeker seeker;
+    private Company company;
     
     
     @Override
@@ -23,9 +26,9 @@ public class CustomUserDetails implements UserDetails {
         if (seeker != null) {
             return seeker.getRoles();
         }
-        // if (company != null) {
-        //     return company.getRoles();
-        // }
+        if (company != null) {
+            return company.getRoles();
+        }
         // if (admin != null) {
         //     return admin.getRoles();
         // }
@@ -37,7 +40,7 @@ public class CustomUserDetails implements UserDetails {
         // return seeker.getPassword();
 
         if (seeker != null) return seeker.getPassword();
-        // if (company != null) return company.getPassword();
+        if (company != null) return company.getPassword();
         // if (admin != null) return admin.getPassword();
 
         return null;
@@ -48,7 +51,7 @@ public class CustomUserDetails implements UserDetails {
         // return seeker.getEmail();
 
         if (seeker != null) return seeker.getEmail();
-        // if (company != null) return company.getEmail();
+        if (company != null) return company.getEmail();
         // if (admin != null) return admin.getEmail();
 
         return null;
@@ -59,7 +62,7 @@ public class CustomUserDetails implements UserDetails {
         // return seeker.getIsAccountNonExpired();
 
         if (seeker != null) return seeker.getIsAccountNonExpired();
-        // if (company != null) return company.getIsAccountNonExpired();
+        if (company != null) return company.getIsAccountNonExpired();
         // if (admin != null) return admin.getIsAccountNonExpired();
 
         return true;
@@ -70,7 +73,7 @@ public class CustomUserDetails implements UserDetails {
         // return seeker.getIsAccountNonLocked();
 
         if (seeker != null) return seeker.getIsAccountNonLocked();
-        // if (company != null) return company.getIsAccountNonLocked();
+        if (company != null) return company.getIsAccountNonLocked();
         // if (admin != null) return admin.getIsAccountNonLocked();
 
         return true;
@@ -80,7 +83,7 @@ public class CustomUserDetails implements UserDetails {
     public boolean isCredentialsNonExpired() {
         // return seeker.getIsCredentialsNonExpired();
         if (seeker != null) return seeker.getIsCredentialsNonExpired();
-        // if (company != null) return company.getIsCredentialsNonExpired();
+        if (company != null) return company.getIsCredentialsNonExpired();
         // if (admin != null) return admin.getIsCredentialsNonExpired();
 
         return true;
@@ -91,7 +94,7 @@ public class CustomUserDetails implements UserDetails {
         // return !seeker.getIsDeleted();
 
         if (seeker != null) return !seeker.getIsDeleted();
-        // if (company != null) return !company.getIsDeleted();
+        if (company != null) return !company.getIsDeleted();
         // if (admin != null) return !admin.getIsDeleted();
 
         return true;

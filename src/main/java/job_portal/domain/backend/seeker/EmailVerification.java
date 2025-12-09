@@ -2,13 +2,8 @@ package job_portal.domain.backend.seeker;
 
 import java.time.LocalTime;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import job_portal.domain.backend.company.Company;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -25,6 +20,16 @@ public class EmailVerification {
 
     @OneToOne
     private Seeker seeker;
+
+    @OneToOne
+    private Company company;
+//    @OneToOne(optional = true)
+//    @JoinColumn(name = "seeker_id")
+//    private Seeker seeker;
+//
+//    @OneToOne(optional = true)
+//    @JoinColumn(name = "company_id")
+//    private Company company;
 
     @Column(nullable = false)
     private LocalTime expiryTime;

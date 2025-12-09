@@ -2,6 +2,7 @@ package job_portal.domain.backend;
 import java.time.LocalDate;
 import java.util.List;
 
+import job_portal.domain.backend.company.Company;
 import org.springframework.security.core.GrantedAuthority;
 
 import jakarta.persistence.Column;
@@ -40,7 +41,10 @@ public class Role implements GrantedAuthority{
     private LocalDate createdAt;
 
     @ManyToMany(mappedBy = "roles")
-    private List<Seeker> seekers;  
+    private List<Seeker> seekers;
+
+    @ManyToMany(mappedBy = "roles")
+    private List<Company> companies;
     
     @Override
     public String getAuthority() {
