@@ -8,8 +8,8 @@ import job_portal.feature.seeker.auth.dto.request.RegisterRequest;
 @Mapper(componentModel = "spring")
 public interface SeekerMapper{
 
-     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-     @Mapping(target = "jobLevel", ignore = true)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "jobLevel", ignore = true)
     void fromSeekerUpdateRequest(SeekerUpdateRequest seekerUpdateRequest, @MappingTarget Seeker seeker);
 
     Seeker fromRegisterRequest(RegisterRequest registerRequest);

@@ -1,11 +1,9 @@
 package job_portal.security;
 import java.util.Collection;
 import java.util.List;
-
 import job_portal.domain.backend.company.Company;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import job_portal.domain.backend.seeker.Seeker;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -1,7 +1,6 @@
 package job_portal.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
@@ -19,7 +18,7 @@ public class SwaggerConfig {
         .scheme("bearer");
     }
     
-        @Bean
+    @Bean
     public OpenAPI openAPI() {
         return new OpenAPI().addSecurityItem(new SecurityRequirement().
             addList("Bearer Authentication"))
@@ -28,7 +27,7 @@ public class SwaggerConfig {
         .info(new Info().title("Job-Portal api")
             .description("Job-Portal api")
             .version("1.0").contact(new Contact().name("My Homie")
-                .email( "bunpanin017@gmail.com").url("www.istad.co"))
+                .email( "bunpanin017@gmail.com").url("KonJrokTang4"))
             .license(new License().name("License of API")
                 .url("API license URL")));
     }

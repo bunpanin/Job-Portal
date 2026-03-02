@@ -5,6 +5,5 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface AuthCompanyMapper {
-
     Company fromRegisterRequest(CompanyRegisterRequest companyRegisterRequest);
 }
