@@ -1,5 +1,4 @@
 package job_portal.feature.seeker.auth;
-import job_portal.domain.backend.seeker.Seeker;
 import job_portal.feature.seeker.auth.dto.request.SeekerUpdateRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;

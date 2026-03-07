@@ -9,20 +9,13 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import java.util.Collection; 
-import java.util.stream.Collectors;
 import org.springframework.context.annotation.Bean;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.core.convert.converter.Converter;
 
 
 @Configuration
@@ -36,16 +29,16 @@ public class SecurityConfig {
 
     private final PasswordEncoder passwordEncoder;
 
-    // --------------------- For Handle Cross-Origin ---------------------------
+    // ********** Handle Cross-Origin **********
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
         // --- REACT FRONTEND URLS ---
         config.setAllowCredentials(true);
-        config.addAllowedOriginPattern("http://localhost:3000");   // React local
-        config.addAllowedOriginPattern("http://192.168.18.*");     // LAN devices
-        config.addAllowedOriginPattern("*");                       // If needed for testing
+        config.addAllowedOriginPattern("http://localhost:3000");  
+        config.addAllowedOriginPattern("http://192.168.18.*");    
+        config.addAllowedOriginPattern("*");                      
 
         // --- ALLOW HEADERS ---
         config.addAllowedHeader("*");
@@ -64,47 +57,18 @@ public class SecurityConfig {
         return source;
     }
 
-//    @Bean
-//    public JwtAuthenticationConverter jwtAuthenticationConverter() {
-//
-//        Converter<Jwt, Collection<GrantedAuthority>> jwtGrantedAuthoritiesConverter = jwt -> {
-//            String id = jwt.getId();
-//            log.info("ID: {}", id);
-//            CustomUserDetails userDetails = (CustomUserDetails) seekerDetailServiceImpl.loadUserByUsername(id);
-//            log.info("AUTHORITIES: {}", userDetails.getAuthorities());
-//            return userDetails.getAuthorities()
-//                    .stream()
-//                    .map(grantedAuthority -> new SimpleGrantedAuthority(grantedAuthority.getAuthority()))
-//                    .collect(Collectors.toList());
-//        };
-//        var jwtAuthenticationConverter = new JwtAuthenticationConverter();
-//        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
-//
-//        return jwtAuthenticationConverter;
-//    }
-
     public DaoAuthenticationProvider seekerAuthProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(seekerDetailServiceImpl);
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(seekerDetailServiceImpl);
         provider.setPasswordEncoder(passwordEncoder);
         return provider;
     }
 
-     @Bean
-     public DaoAuthenticationProvider companyAuthProvider() {
-         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-         provider.setUserDetailsService(companyDetailServiceImpl);
-         provider.setPasswordEncoder(passwordEncoder);
-         return provider;
-     }
-
-    // @Bean
-    // public DaoAuthenticationProvider adminAuthProvider() {
-    //     DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-    //     provider.setUserDetailsService(adminDetailServiceImpl);
-    //     provider.setPasswordEncoder(passwordEncoder);
-    //     return provider;
-    // }
+    @Bean
+    public DaoAuthenticationProvider companyAuthProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(companyDetailServiceImpl);
+        provider.setPasswordEncoder(passwordEncoder);
+        return provider;
+    }
 
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
@@ -112,38 +76,10 @@ public class SecurityConfig {
         http.getSharedObject(AuthenticationManagerBuilder.class);
 
         builder.authenticationProvider(seekerAuthProvider());
-         builder.authenticationProvider(companyAuthProvider());
-        // builder.authenticationProvider(adminAuthProvider());
-
+        builder.authenticationProvider(companyAuthProvider());
         return builder.build();
     }
 
-//    @Bean
-//    public SecurityFilterChain seekerChain(HttpSecurity http,JwtDecoder jwtDecoder) throws Exception {
-//
-//        // http.securityMatcher("/api/v1/seeker/**");
-//        http.securityMatcher("/api/seeker/auth/**").userDetailsService(seekerDetailServiceImpl);
-//
-//        http.securityMatcher("/api/company/auth/**").userDetailsService(companyDetailServiceImpl);
-//
-//        http.cors(cors -> cors.configurationSource(corsConfigurationSource()));  // <--- IMPORTANT
-//
-//        http.oauth2ResourceServer(oauth2 ->
-//            oauth2.jwt(jwt -> jwt.decoder(jwtDecoder))
-//        );
-//
-//        http.csrf(csrf -> csrf.disable());
-//        http.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-//
-//        // Make API stateless
-//        http.sessionManagement(session -> session
-//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-//
-//        return http.build();
-//
-//    }
-
-// ---- SEEKER FILTER CHAIN ----
     @Bean
     @Order(1)
     public SecurityFilterChain seekerChain(HttpSecurity http, JwtDecoder jwtDecoder) throws Exception {
@@ -183,11 +119,9 @@ public class SecurityConfig {
 
         // Use COMPANY user detail service
         http.userDetailsService(companyDetailServiceImpl);
-
-        http.oauth2ResourceServer(oauth2 ->
-                oauth2.jwt(jwt -> jwt.decoder(jwtDecoder))
+        http.oauth2ResourceServer(
+            oauth2 -> oauth2.jwt(jwt -> jwt.decoder(jwtDecoder))
         );
-
         return http.build();
     }
 

@@ -3,26 +3,20 @@ services:
     image: postgres:16.3-bullseye
     container_name: jobportal-db
     ports:
-      - 4443:5432
+      - "4443:5432"
+    env_file:
+      - .env
     environment:
-      POSTGRES_PASSWORD: panin@2025
-      POSTGRES_USER: panin
-      POSTGRES_DB: jobportal_db
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      - /Users/bunpanin/Documents/School/thesis/data:/var/lib/postgresql/data
-    # networks:
-    #   - jobportal-net
-  
-# networks:
-#   jobportal-net:
-#     driver: bridge
+      - jobportal-db-data:/var/lib/postgresql/data
+    networks:
+      - jobportal-net
+volumes:
+  jobportal-db-data:
 
-# jobportal-api:
-#   image: "jobportal-api"
-#   container_name: jobportal-api
-#   ports:
-#     - 8000:8080
-#   volumes:
-#     - /Users/citu/Documents/ITO_Panin/spring/Files/jobportal-files/:/file-server/
-#   networks:
-#     - jobportal-net
+networks:
+  jobportal-net:
+    driver: bridge

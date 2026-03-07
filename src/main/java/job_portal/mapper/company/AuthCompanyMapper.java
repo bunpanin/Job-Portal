@@ -3,7 +3,8 @@ import job_portal.domain.backend.company.Company;
 import job_portal.feature.company.auth.dto.request.CompanyRegisterRequest;
 import org.mapstruct.Mapper;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring",unmappedTargetPolicy = org.mapstruct.ReportingPolicy.IGNORE
+)
 public interface AuthCompanyMapper {
     Company fromRegisterRequest(CompanyRegisterRequest companyRegisterRequest);
 }

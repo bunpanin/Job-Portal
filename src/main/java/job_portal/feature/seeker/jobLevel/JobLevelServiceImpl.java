@@ -6,7 +6,6 @@ import job_portal.feature.seeker.auth.SeekerRepository;
 import job_portal.feature.seeker.jobLevel.request.CreateJobLevelRequest;
 import job_portal.feature.seeker.jobLevel.request.UpdateJobLevelRequeset;
 import job_portal.mapper.seeker.JobLevelMapper;
-import job_portal.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;

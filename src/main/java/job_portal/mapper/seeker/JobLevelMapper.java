@@ -7,9 +7,11 @@ import job_portal.feature.seeker.jobLevel.respone.JobLevelRespone;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 
-@Mapper(componentModel = "spring")
+@Mapper(
+    componentModel = "spring",
+    unmappedTargetPolicy = org.mapstruct.ReportingPolicy.IGNORE
+)
 public interface JobLevelMapper {
-
     JobLevel fromCreateNewJobLevel(CreateJobLevelRequest createJobLevelRequest);
     void fromJobLevelUpdateRequest(UpdateJobLevelRequeset updateJobLevelRequest, @MappingTarget JobLevel jobLevel);
     JobLevelRespone toJobLevelRespone(JobLevel jobLevel);
