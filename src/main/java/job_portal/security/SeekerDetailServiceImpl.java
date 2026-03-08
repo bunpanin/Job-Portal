@@ -19,16 +19,11 @@ public class SeekerDetailServiceImpl implements UserDetailsService{
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         log.info("Username : {}", username);
-
         Seeker seeker = seekerRepository.findByEmail(username)
             .orElseThrow(()-> new UsernameNotFoundException("Seeker Not Found!"));
         CustomUserDetails customUserDetails = new CustomUserDetails();
         customUserDetails.setSeeker(seeker);
         return customUserDetails;
-
-        //  CustomUserDetails customUserDetails = new CustomUserDetails();
-        // customUserDetails.setSeeker(seeker);
-        // return customUserDetails;
     }
     
 }

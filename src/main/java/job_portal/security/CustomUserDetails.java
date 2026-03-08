@@ -1,8 +1,11 @@
 package job_portal.security;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+
+import job_portal.domain.backend.Permission;
+import job_portal.domain.backend.Role;
 import job_portal.domain.backend.company.Company;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import job_portal.domain.backend.seeker.Seeker;
 import lombok.Getter;
@@ -20,17 +23,45 @@ public class CustomUserDetails implements UserDetails {
     
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // return seeker.getRoles();
+
+        Set<GrantedAuthority> authorities = new HashSet<>();
+
+        Set<Role> roles =  new HashSet<>();
+
         if (seeker != null) {
-            return seeker.getRoles();
+            roles = seeker.getRoles();
         }
-        if (company != null) {
-            return company.getRoles();
+
+//        if (company != null) {
+//            roles = company.getRoles();
+//        }
+
+//    if (admin != null) {
+//        roles = admin.getRoles();
+//    }
+
+        for (Role role : roles) {
+
+            // Add role authority
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getName()));
+
+            // Add permission authorities
+            for (Permission permission : role.getPermissions()) {
+                authorities.add(new SimpleGrantedAuthority(permission.getName()));
+            }
         }
-        // if (admin != null) {
-        //     return admin.getRoles();
-        // }
-        return List.of();
+
+        return authorities;
+//        if (seeker != null) {
+//            return seeker.getRoles();
+//        }
+//        if (company != null) {
+//            return company.getRoles();
+//        }
+//         if (admin != null) {
+//             return admin.getRoles();
+//         }
+//        return List.of();
     }
 
     @Override

@@ -2,7 +2,11 @@ package job_portal.init;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+
+import job_portal.domain.backend.Permission;
+import job_portal.feature.seeker.permission.PermissionRepository;
 import org.springframework.stereotype.Component;
 import jakarta.annotation.PostConstruct;
 import job_portal.domain.backend.Role;
@@ -25,6 +29,7 @@ public class DataInit {
     private final TypeOfExperienceRepository typeOfExperienceRepository;
     private final DegreeRepository degreeRepository;
     private final LanguageLevelRepository languageLevelRepository;
+    private final PermissionRepository permissionRepository;
 
     @PostConstruct
     void init(){
@@ -33,6 +38,24 @@ public class DataInit {
         initTypeOfExperienceData();
         initDegreeData();
         initLanguageLevel();
+        initPermission();
+    }
+
+    private  void initPermission(){
+        Permission apply = Permission.builder().name("JOB_APPLY").build();
+        Permission view = Permission.builder().name("JOB_VIEW").build();
+
+        permissionRepository.saveAll(List.of(apply, view));
+
+        Role seekerRole = roleRepository.findByName("SEEKER").orElseThrow();
+
+        seekerRole.setPermissions(Set.of(apply, view));
+
+        roleRepository.save(seekerRole);
+//        List<Permission> permissions = new ArrayList<>();
+//        permissions.add(Permission.builder().name("JOB_APPLY").build());
+//        permissions.add(Permission.builder().name("JOB_VIEW").build());
+//        permissionRepository.saveAll(permissions);
     }
 
     private void initLanguageLevel(){

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -401,13 +402,25 @@ public class SeekerServiceImpl implements SeekerService {
         seeker.setIsCredentialsNonExpired(true);
         seeker.setIsDeleted(true);
         seeker.setPassword(passwordEncoder.encode(seeker.getPassword()));
+
+
+
+    // ==== Assign default role for RBAC testing ====
+    Role seekerRole = roleRepository.findByName("SEEKER")
+            .orElseThrow(() -> new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Default role SEEKER not found! Did you run initRoleData()?"
+            ));
+
+    // Assign role to seeker
+    seeker.setRoles(Set.of(seekerRole));
         
-        List<Role> roles = new ArrayList<>();
-        roles.add(roleRepository.findById(1).orElseThrow());
-        roles.add(roleRepository.findById(2).orElseThrow());
-        roles.add(roleRepository.findById(3).orElseThrow());
-        roles.add(roleRepository.findById(4).orElseThrow());
-        seeker.setRoles(roles);
+//        List<Role> roles = new ArrayList<>();
+//        roles.add(roleRepository.findById(1).orElseThrow());x
+//        roles.add(roleRepository.findById(2).orElseThrow());
+//        roles.add(roleRepository.findById(3).orElseThrow());
+//        roles.add(roleRepository.findById(4).orElseThrow());
+//        seeker.setRoles();
         seekerRepository.save(seeker);
 
         EmailVerification emailVerification = new EmailVerification();

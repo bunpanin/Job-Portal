@@ -8,7 +8,8 @@ import job_portal.domain.backend.seeker.Seeker;
 @Repository
 public interface SeekerRepository extends JpaRepository<Seeker,Integer> {
 
-    Boolean existsByEmail(String email); 
+    Boolean existsByEmail(String email);
+//    Optional<Seeker> findByUsername(String username);
     Optional<Seeker> findByEmail(String email);
     Optional<Seeker> findByUuid(String uuid);
 }
