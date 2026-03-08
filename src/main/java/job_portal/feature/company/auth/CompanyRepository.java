@@ -1,6 +1,5 @@
 package job_portal.feature.company.auth;
 import job_portal.domain.backend.company.Company;
-import job_portal.domain.backend.seeker.Seeker;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

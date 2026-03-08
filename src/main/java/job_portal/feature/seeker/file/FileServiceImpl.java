@@ -40,7 +40,6 @@ public class FileServiceImpl implements FileService {
         );
 
         String newName = FileUtil.generateFileName(file.getOriginalFilename());
-        String extension = FileUtil.extractExtention(file.getOriginalFilename());
 
         // Physical path (PC)
         Path newFilePath = Path.of(serverPath + newName);

@@ -34,8 +34,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 
     implementation 'me.paulschwarz:spring-dotenv:4.0.0'
-    
-     // dotenv loader
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    // dotenv loader
     runtimeOnly 'org.postgresql:postgresql'
 
     // Lombok & MapStruct

@@ -1,17 +1,13 @@
 package job_portal.feature.company.auth;
-
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import job_portal.domain.backend.Role;
 import job_portal.domain.backend.company.Company;
 import job_portal.domain.backend.seeker.EmailVerification;
-import job_portal.domain.backend.seeker.Seeker;
 import job_portal.feature.company.auth.dto.request.CompanyLoginRequest;
 import job_portal.feature.company.auth.dto.request.CompanyRegisterRequest;
 import job_portal.feature.company.auth.dto.request.CompanyVerifyRequest;
 import job_portal.feature.seeker.auth.EmailVerificationRepository;
-import job_portal.feature.seeker.auth.SeekerRepository;
-import job_portal.feature.seeker.auth.dto.request.RegisterRequest;
 import job_portal.feature.seeker.role.RoleRepository;
 import job_portal.mapper.company.AuthCompanyMapper;
 import job_portal.util.MailHtmlUtil;
@@ -29,7 +25,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
