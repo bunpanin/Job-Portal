@@ -392,8 +392,9 @@ public class SeekerServiceImpl implements SeekerService {
         }
 
         Seeker seeker = seekerMapper.fromRegisterRequest(registerRequest);
-        seeker.setUuid(registerRequest.fullName().toLowerCase() + "-" + UUID.randomUUID().toString());
+//        seeker.setUuid(registerRequest.fullName().toLowerCase() + "-" + UUID.randomUUID().toString());
         // seeker.setUuid(registerRequest.fullName() + "-" + shortUuid);
+        seeker.setUuid(registerRequest.fullName().toLowerCase().replace(" ", "-") + "-" + UUID.randomUUID().toString());
         seeker.setCreatedAt(LocalDateTime.now());
         seeker.setIsVerified(false);
         seeker.setIsBloked(false);

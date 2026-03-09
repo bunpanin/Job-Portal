@@ -16,6 +16,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 
 
 @Configuration
@@ -80,6 +82,23 @@ public class SecurityConfig {
         return builder.build();
     }
 
+    /**
+     * Configure JwtAuthenticationConverter so that the 'scope' claim from the JWT
+     * is converted into GrantedAuthority values without the default "SCOPE_" prefix.
+     * This allows using @PreAuthorize("hasAuthority('JOB_VIEW')") when the JWT
+     * contains scope claim like: "JOB_VIEW ROLE_SEEKER JOB_APPLY".
+     */
+    private JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        // Use the claim named "scope" (default supports "scope" and "scp") and remove prefix
+        grantedAuthoritiesConverter.setAuthorityPrefix("");
+        grantedAuthoritiesConverter.setAuthoritiesClaimName("scope");
+
+        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
+        return jwtAuthenticationConverter;
+    }
+
     @Bean
     @Order(1)
     public SecurityFilterChain seekerChain(HttpSecurity http, JwtDecoder jwtDecoder) throws Exception {
@@ -97,7 +116,7 @@ public class SecurityConfig {
         http.userDetailsService(seekerDetailServiceImpl);
 
         http.oauth2ResourceServer(oauth2 ->
-                oauth2.jwt(jwt -> jwt.decoder(jwtDecoder))
+                oauth2.jwt(jwt -> jwt.decoder(jwtDecoder).jwtAuthenticationConverter(jwtAuthenticationConverter()))
         );
 
         return http.build();
@@ -120,12 +139,12 @@ public class SecurityConfig {
         // Use COMPANY user detail service
         http.userDetailsService(companyDetailServiceImpl);
         http.oauth2ResourceServer(
-            oauth2 -> oauth2.jwt(jwt -> jwt.decoder(jwtDecoder))
+            oauth2 -> oauth2.jwt(jwt -> jwt.decoder(jwtDecoder).jwtAuthenticationConverter(jwtAuthenticationConverter()))
         );
         return http.build();
     }
 
 
 
-    
 }
+
