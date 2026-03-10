@@ -2,6 +2,7 @@ package job_portal.feature.seeker.auth;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,8 +12,10 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import job_portal.domain.backend.Permission;
 import job_portal.feature.seeker.auth.dto.request.SeekerUpdateRequest;
 import job_portal.feature.seeker.language.dto.respone.LanguageRespone;
+import job_portal.feature.seeker.permission.PermissionRepository;
 import job_portal.feature.seeker.reference.dto.respone.ReferenceRespone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -67,6 +70,7 @@ public class SeekerServiceImpl implements SeekerService {
     private final RoleRepository roleRepository;
     private final JobLevelRepository jobLevelRepository;
     private final AuthenticationManager authProvider;
+    private final PermissionRepository permissionRepository;
     // private final TypeOfExperienceRepository typeOfExperienceRepository;
     // private final SeekerWorkExperienceRepository seekerWorkExperienceRepository;
     // private final WorkExperienceRepository workExperienceRepository;
@@ -366,10 +370,8 @@ public class SeekerServiceImpl implements SeekerService {
                 "Verification code is expired!"
             );
         }
-
         seeker.setIsVerified(true);
         seeker.setIsDeleted(false);
-
         seekerRepository.save(seeker);
     }
 
@@ -391,10 +393,24 @@ public class SeekerServiceImpl implements SeekerService {
             );
         }
 
+        Role seekerRole = roleRepository.findByName("SEEKER")
+        .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "Seeker Role not found!"
+        ));
+//        Permission apply = permissionRepository.findById(1).orElseThrow();
+//        Permission manageProfile = permissionRepository.findById(2).orElseThrow();
+//        Permission uploadCV = permissionRepository.findById(3).orElseThrow();
+//        Permission trackApplication = permissionRepository.findById(4).orElseThrow();
+//        seekerRole.setPermissions(Set.of(apply, manageProfile,uploadCV,trackApplication));
+//        roleRepository.save(seekerRole);
+
+
         Seeker seeker = seekerMapper.fromRegisterRequest(registerRequest);
-//        seeker.setUuid(registerRequest.fullName().toLowerCase() + "-" + UUID.randomUUID().toString());
-        // seeker.setUuid(registerRequest.fullName() + "-" + shortUuid);
-        seeker.setUuid(registerRequest.fullName().toLowerCase().replace(" ", "-") + "-" + UUID.randomUUID().toString());
+        String slugName = registerRequest.fullName().toLowerCase().replace(" ", "-");
+        String dateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHH"));
+        String uuid = UUID.randomUUID().toString();
+        seeker.setUuid(slugName + "-" + dateTime + "-" + uuid);
         seeker.setCreatedAt(LocalDateTime.now());
         seeker.setIsVerified(false);
         seeker.setIsBloked(false);
@@ -403,26 +419,9 @@ public class SeekerServiceImpl implements SeekerService {
         seeker.setIsCredentialsNonExpired(true);
         seeker.setIsDeleted(true);
         seeker.setPassword(passwordEncoder.encode(seeker.getPassword()));
-
-
-
-    // ==== Assign default role for RBAC testing ====
-    Role seekerRole = roleRepository.findByName("SEEKER")
-            .orElseThrow(() -> new ResponseStatusException(
-                    HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Default role SEEKER not found! Did you run initRoleData()?"
-            ));
-
-    // Assign role to seeker
-    seeker.setRoles(Set.of(seekerRole));
-        
-//        List<Role> roles = new ArrayList<>();
-//        roles.add(roleRepository.findById(1).orElseThrow());x
-//        roles.add(roleRepository.findById(2).orElseThrow());
-//        roles.add(roleRepository.findById(3).orElseThrow());
-//        roles.add(roleRepository.findById(4).orElseThrow());
-//        seeker.setRoles();
+        seeker.setRoles(Set.of(seekerRole));
         seekerRepository.save(seeker);
+
 
         EmailVerification emailVerification = new EmailVerification();
         emailVerification.setVerificationCode(RandomUtil.random6Digits());
@@ -435,7 +434,6 @@ public class SeekerServiceImpl implements SeekerService {
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
         helper.setSubject("Email Verification - Job-Portal");
         helper.setTo(seeker.getEmail());
-        // helper.setFrom(myMail);
         helper.setText(MailHtmlUtil.buildVerificationEmail(emailVerification.getVerificationCode()), true);
         javaMailSender.send(mimeMessage);
     }

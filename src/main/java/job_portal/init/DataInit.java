@@ -1,5 +1,6 @@
 package job_portal.init;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -42,20 +43,34 @@ public class DataInit {
     }
 
     private  void initPermission(){
-        Permission apply = Permission.builder().name("JOB_APPLY").build();
-        Permission view = Permission.builder().name("JOB_VIEW").build();
-
-        permissionRepository.saveAll(List.of(apply, view));
-
+        Permission apply = Permission.builder()
+                .name("seeker_apply_job")
+                .description("Seeker Apply Job Permission")
+                .isDeleted(false)
+                .createdAt(LocalDateTime.now())
+                .build();
+        Permission manageProfile = Permission.builder()
+                .name("seeker_manage_profile")
+                .description("Seeker Manage Profile Permission")
+                .isDeleted(false)
+                .createdAt(LocalDateTime.now())
+                .build();
+        Permission uploadCV = Permission.builder()
+                .name("seeker_cv_upload")
+                .description("Seeker CV Upload Permission")
+                .isDeleted(false)
+                .createdAt(LocalDateTime.now())
+                .build();
+        Permission trackApplication = Permission.builder()
+                .name("seeker_track_application")
+                .description("Seeker Track Application Permission")
+                .isDeleted(false)
+                .createdAt(LocalDateTime.now())
+                .build();
+        permissionRepository.saveAll(List.of(apply, manageProfile,uploadCV,trackApplication));
         Role seekerRole = roleRepository.findByName("SEEKER").orElseThrow();
-
-        seekerRole.setPermissions(Set.of(apply, view));
-
+        seekerRole.setPermissions(Set.of(apply, manageProfile,uploadCV,trackApplication));
         roleRepository.save(seekerRole);
-//        List<Permission> permissions = new ArrayList<>();
-//        permissions.add(Permission.builder().name("JOB_APPLY").build());
-//        permissions.add(Permission.builder().name("JOB_VIEW").build());
-//        permissionRepository.saveAll(permissions);
     }
 
     private void initLanguageLevel(){

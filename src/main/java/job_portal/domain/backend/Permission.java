@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -15,7 +18,14 @@ public class Permission implements GrantedAuthority {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    @Column(unique = true, nullable = false)
     private String name;
+    @Column(columnDefinition = "TEXT", nullable = true)
+    private String description;
+    @Column(nullable = false)
+    private Boolean isDeleted;
+    @Column(nullable = false)
+    private LocalDateTime createdAt;
 
     @Override
     public String getAuthority() {

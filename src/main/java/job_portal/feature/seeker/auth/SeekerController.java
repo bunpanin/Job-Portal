@@ -19,14 +19,9 @@ public class SeekerController {
 
     private final SeekerService seekerService;
 
-//     @PutMapping("/update/{uuid}")
-//     @ResponseStatus(HttpStatus.OK)
-//     SeekerDataRespone update(@Valid @PathVariable String uuid, @RequestBody SeekerUpdateRequest seekerUpdateRequest){
-//         return seekerService.updateByUuid(uuid, seekerUpdateRequest);
-//     }
     @PatchMapping("/{uuid}")
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasAuthority('JOB_VIEW')")
+    @PreAuthorize("hasAuthority('seeker_manage_profile')")
     void updateSeeker(@PathVariable String uuid, @Valid @RequestBody SeekerUpdateRequest  seekerUpdateRequest) {
         seekerService.updateSeekerByUuid(uuid, seekerUpdateRequest);
     }

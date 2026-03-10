@@ -46,11 +46,6 @@ public class Role{
             joinColumns = @JoinColumn(name = "role_id"),
             inverseJoinColumns = @JoinColumn(name = "permission_id")
     )
-    // private List<Permission> permissions;
     private Set<Permission> permissions;
 
-//    @Override
-//    public String getAuthority() {
-//        return "ROLE_" + name; // ROLE_ADMIN, ROLE_MANAGER
-//    }
 }
