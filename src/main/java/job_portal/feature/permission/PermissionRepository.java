@@ -1,4 +1,4 @@
-package job_portal.feature.seeker.permission;
+package job_portal.feature.permission;
 
 import job_portal.domain.backend.Permission;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -6,7 +6,7 @@ import job_portal.feature.seeker.achievement.dto.respone.AchievementRespone;
 import job_portal.feature.seeker.education.dto.respone.EducationRespone;
 import job_portal.feature.seeker.language.dto.respone.LanguageRespone;
 import job_portal.feature.seeker.reference.dto.respone.ReferenceRespone;
-import job_portal.feature.seeker.role.dto.respone.RoleRespone;
+import job_portal.feature.role.dto.respone.RoleRespone;
 import job_portal.feature.seeker.workExperience.dto.respone.WorkExperienceRespone;
 import lombok.Builder;
 

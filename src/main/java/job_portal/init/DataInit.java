@@ -7,7 +7,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import job_portal.domain.backend.Permission;
-import job_portal.feature.seeker.permission.PermissionRepository;
+import job_portal.feature.permission.PermissionRepository;
+import job_portal.feature.role.RoleRepository;
 import org.springframework.stereotype.Component;
 import jakarta.annotation.PostConstruct;
 import job_portal.domain.backend.Role;
@@ -25,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class DataInit {
 
-    private final job_portal.feature.seeker.role.RoleRepository roleRepository;
+    private final RoleRepository roleRepository;
     private final JobLevelRepository jobLevelRepository;
     private final TypeOfExperienceRepository typeOfExperienceRepository;
     private final DegreeRepository degreeRepository;
@@ -48,24 +49,32 @@ public class DataInit {
                 .description("Seeker Apply Job Permission")
                 .isDeleted(false)
                 .createdAt(LocalDateTime.now())
+                .createbyAlias("system")
+                .createbyUuid("system")
                 .build();
         Permission manageProfile = Permission.builder()
                 .name("seeker_manage_profile")
                 .description("Seeker Manage Profile Permission")
                 .isDeleted(false)
                 .createdAt(LocalDateTime.now())
+                .createbyAlias("system")
+                .createbyUuid("system")
                 .build();
         Permission uploadCV = Permission.builder()
                 .name("seeker_cv_upload")
                 .description("Seeker CV Upload Permission")
                 .isDeleted(false)
                 .createdAt(LocalDateTime.now())
+                .createbyAlias("system")
+                .createbyUuid("system")
                 .build();
         Permission trackApplication = Permission.builder()
                 .name("seeker_track_application")
                 .description("Seeker Track Application Permission")
                 .isDeleted(false)
                 .createdAt(LocalDateTime.now())
+                .createbyAlias("system")
+                .createbyUuid("system")
                 .build();
         permissionRepository.saveAll(List.of(apply, manageProfile,uploadCV,trackApplication));
         Role seekerRole = roleRepository.findByName("SEEKER").orElseThrow();

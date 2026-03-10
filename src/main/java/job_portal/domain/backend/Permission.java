@@ -26,7 +26,10 @@ public class Permission implements GrantedAuthority {
     private Boolean isDeleted;
     @Column(nullable = false)
     private LocalDateTime createdAt;
-
+    @Column(nullable = false)
+    private String createbyAlias;
+    @Column(nullable = false)
+    private String createbyUuid;
     @Override
     public String getAuthority() {
         return name;

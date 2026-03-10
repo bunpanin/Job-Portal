@@ -1,4 +1,4 @@
-package job_portal.feature.seeker.role;
+package job_portal.feature.role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

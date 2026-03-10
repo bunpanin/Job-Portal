@@ -8,7 +8,7 @@ import job_portal.feature.company.auth.dto.request.CompanyLoginRequest;
 import job_portal.feature.company.auth.dto.request.CompanyRegisterRequest;
 import job_portal.feature.company.auth.dto.request.CompanyVerifyRequest;
 import job_portal.feature.seeker.auth.EmailVerificationRepository;
-import job_portal.feature.seeker.role.RoleRepository;
+import job_portal.feature.role.RoleRepository;
 import job_portal.mapper.company.AuthCompanyMapper;
 import job_portal.util.MailHtmlUtil;
 import job_portal.util.RandomUtil;
