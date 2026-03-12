@@ -76,6 +76,12 @@ public class DataInit {
                 .createbyAlias("system")
                 .createbyUuid("system")
                 .build();
+//        Role seekerRole = roleRepository.findByName("SEEKER")
+//                .orElseThrow(() -> new RuntimeException("Role SEEKER not found"));
+//
+//        seekerRole.setPermissions(new HashSet<>(savedPermissions));
+//
+//        roleRepository.save(seekerRole);
         permissionRepository.saveAll(List.of(apply, manageProfile,uploadCV,trackApplication));
         Role seekerRole = roleRepository.findByName("SEEKER").orElseThrow();
         seekerRole.setPermissions(Set.of(apply, manageProfile,uploadCV,trackApplication));

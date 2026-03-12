@@ -1,6 +1,7 @@
 package job_portal.domain.backend.seeker;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -19,6 +20,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import job_portal.domain.backend.Role;
+import job_portal.domain.backend.UserRole;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -92,18 +94,17 @@ public class Seeker {
     private Boolean isAccountNonLocked;
     private Boolean isCredentialsNonExpired;
     private Boolean isDeleted;
-    // can i use  role "seeker"
-//    @ManyToMany(fetch = FetchType.EAGER)
-//    @JoinTable(joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-//        inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
-//    private List<Role> roles;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "seeker_roles",
-            joinColumns = @JoinColumn(name = "seeker_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
-    private Set<Role> roles;
+//    @ManyToMany(fetch = FetchType.LAZY)
+//    @JoinTable(
+//            name = "user_roles",
+//            joinColumns = @JoinColumn(name = "seeker_id"),
+//            inverseJoinColumns = @JoinColumn(name = "role_id")
+//    )
+//    private Set<Role> roles;
+
+    @OneToMany(mappedBy = "seeker", cascade = CascadeType.ALL)
+    private Set<UserRole> seekerRoles = new HashSet<>();
+//    private UserRole seekerRoles;
 
 }

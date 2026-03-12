@@ -1,5 +1,6 @@
 package job_portal.domain.backend;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -48,4 +49,7 @@ public class Role{
     )
     private Set<Permission> permissions;
 
+    @OneToMany(mappedBy = "role")
+    private Set<UserRole> seekerRoles = new HashSet<>();
+//    private UserRole userRole;
 }

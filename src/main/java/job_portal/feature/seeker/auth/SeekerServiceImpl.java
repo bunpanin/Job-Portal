@@ -11,10 +11,12 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import job_portal.domain.backend.UserRole;
 import job_portal.feature.seeker.auth.dto.request.SeekerUpdateRequest;
 import job_portal.feature.seeker.language.dto.respone.LanguageRespone;
 import job_portal.feature.permission.PermissionRepository;
 import job_portal.feature.seeker.reference.dto.respone.ReferenceRespone;
+import job_portal.feature.userRole.UserRoleReposity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -69,6 +71,7 @@ public class SeekerServiceImpl implements SeekerService {
     private final JobLevelRepository jobLevelRepository;
     private final AuthenticationManager authProvider;
     private final PermissionRepository permissionRepository;
+    private final UserRoleReposity userRoleReposity;
     // private final TypeOfExperienceRepository typeOfExperienceRepository;
     // private final SeekerWorkExperienceRepository seekerWorkExperienceRepository;
     // private final WorkExperienceRepository workExperienceRepository;
@@ -161,15 +164,25 @@ public class SeekerServiceImpl implements SeekerService {
             .refreshToken(refreshToken)
             .build();
 
-        List<RoleRespone> roleRespones = seeker.getRoles()
-            .stream()
-            .map(role -> new RoleRespone(
-                role.getUuid(),
-                role.getAlias(),
-                role.getName()
-                )
-            )
-            .toList();
+//        List<RoleRespone> roleRespones = seeker.getRoles()
+//            .stream()
+//            .map(role -> new RoleRespone(
+//                role.getUuid(),
+//                role.getAlias(),
+//                role.getName()
+//                )
+//            )
+//            .toList();
+//        List<RoleRespone> roleRespones = seeker.getSeekerRoles().stream().map(
+//                role -> new RoleRespone(
+//                        role.getRole().getName()
+//                )
+//        );
+
+        List<RoleRespone> roleResponses = seeker.getSeekerRoles()
+                .stream()
+                .map(sr -> new RoleRespone(sr.getRole().getName()))
+                .toList();
 
         JobLevel jobLevel = null;
         if(seeker.getJobLevel() != null && seeker.getJobLevel().getId() != null){
@@ -263,7 +276,7 @@ public class SeekerServiceImpl implements SeekerService {
             .password(seeker.getPassword())
             .gender(seeker.getGender())
             .profile(seeker.getProfile())
-            .roles(roleRespones)
+            .roles(roleResponses)
             .dob(seeker.getDob())
             .address(seeker.getAddress())
             .cityOrProvince(seeker.getCityOrProvince())
@@ -391,17 +404,22 @@ public class SeekerServiceImpl implements SeekerService {
             );
         }
 
-        Role seekerRole = roleRepository.findByName("SEEKER")
-        .orElseThrow(() -> new ResponseStatusException(
-                HttpStatus.NOT_FOUND,
-                "Seeker Role not found!"
-        ));
+//        Role seekerRole = roleRepository.findByName("SEEKER")
+//        .orElseThrow(() -> new ResponseStatusException(
+//                HttpStatus.NOT_FOUND,
+//                "Seeker Role not found!"
+//        ));
+
+
+
 //        Permission apply = permissionRepository.findById(1).orElseThrow();
 //        Permission manageProfile = permissionRepository.findById(2).orElseThrow();
 //        Permission uploadCV = permissionRepository.findById(3).orElseThrow();
 //        Permission trackApplication = permissionRepository.findById(4).orElseThrow();
 //        seekerRole.setPermissions(Set.of(apply, manageProfile,uploadCV,trackApplication));
 //        roleRepository.save(seekerRole);
+
+
 
 
         Seeker seeker = seekerMapper.fromRegisterRequest(registerRequest);
@@ -417,8 +435,18 @@ public class SeekerServiceImpl implements SeekerService {
         seeker.setIsCredentialsNonExpired(true);
         seeker.setIsDeleted(true);
         seeker.setPassword(passwordEncoder.encode(seeker.getPassword()));
-        seeker.setRoles(Set.of(seekerRole));
+//        seeker.setRoles(Set.of(seekerRole));
+
         seekerRepository.save(seeker);
+
+        Role role = roleRepository.findByName("SEEKER").orElseThrow();
+//        userRole.setSeeker(seeker);
+        UserRole userRole = new UserRole();
+        userRole.setRole(role);
+        userRole.setCreatedDate(LocalDateTime.now());
+//        userRoleReposity.save(userRole);
+        userRole.setSeeker(seeker);
+        userRoleReposity.save(userRole);
 
 
         EmailVerification emailVerification = new EmailVerification();

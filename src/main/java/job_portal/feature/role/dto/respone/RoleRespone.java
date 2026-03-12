@@ -3,8 +3,6 @@ import lombok.Builder;
 
 @Builder
 public record RoleRespone(
-    String uuid,
-    String alias,
     String name
 ) {
 }
