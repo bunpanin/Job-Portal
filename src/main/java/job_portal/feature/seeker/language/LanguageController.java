@@ -1,5 +1,6 @@
 package job_portal.feature.seeker.language;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/v1/seeker/language")
 @RequiredArgsConstructor
+@Tag(name = "Seeker Language")
 public class LanguageController {
     
     private final LanguageService languageService;

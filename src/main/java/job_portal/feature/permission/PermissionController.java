@@ -1,5 +1,6 @@
 package job_portal.feature.permission;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import job_portal.feature.permission.dto.request.CreatePermissionRequest;
 import job_portal.feature.permission.dto.request.UpdatePermissionRequest;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/permission")
 @RequiredArgsConstructor
+@Tag(name = "Permission")
 public class PermissionController {
 
     private final PermissionService permissionService;

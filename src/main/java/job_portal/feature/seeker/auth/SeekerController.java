@@ -1,4 +1,5 @@
 package job_portal.feature.seeker.auth;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import job_portal.feature.seeker.auth.dto.request.SeekerUpdateRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/v1/seeker/auth")
 @RequiredArgsConstructor
+@Tag(name = "Seeker Authentication")
 public class SeekerController {
 
     private final SeekerService seekerService;

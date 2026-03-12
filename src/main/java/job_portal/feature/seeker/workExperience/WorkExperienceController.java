@@ -1,4 +1,5 @@
 package job_portal.feature.seeker.workExperience;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/v1/seeker/workExperience")
 @RequiredArgsConstructor
+@Tag(name = "Seeker Work Experience")
 public class WorkExperienceController {
 
     private final WorkExperienceService workExperienceService;

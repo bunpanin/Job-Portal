@@ -1,5 +1,6 @@
 package job_portal.feature.seeker.file;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -11,6 +12,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/api/v1/seeker/profile")
 @RequiredArgsConstructor
+@Tag(name = "Seeker Profile")
 public class FileController {
 
     private final FileService fileService;

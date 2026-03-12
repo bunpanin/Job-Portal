@@ -1,5 +1,6 @@
 package job_portal.feature.seeker.achievement;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,6 +17,7 @@ import job_portal.feature.seeker.achievement.dto.request.CreateAchievementReques
 import job_portal.feature.seeker.achievement.dto.request.UpdateAchievementRequest;
 import lombok.RequiredArgsConstructor;
 
+@Tag(name = "Seeker Achievement")
 @RestController
 @RequestMapping("/api/v1/seeker/achievement")
 @RequiredArgsConstructor

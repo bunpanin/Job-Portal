@@ -2,6 +2,8 @@ package job_portal.feature.seeker.auth.dto.respone;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import job_portal.feature.permission.dto.respone.PermissionRespone;
 import job_portal.feature.seeker.achievement.dto.respone.AchievementRespone;
 import job_portal.feature.seeker.education.dto.respone.EducationRespone;
 import job_portal.feature.seeker.language.dto.respone.LanguageRespone;
@@ -29,6 +31,7 @@ public record DataRespone(
     String portfolio,
     String cvFile,
     List<RoleRespone> roles,
+    List<PermissionRespone> permissions,
     String descriptionYourSelf,
     List<WorkExperienceRespone> workExperiences,
     List<EducationRespone> educations,
