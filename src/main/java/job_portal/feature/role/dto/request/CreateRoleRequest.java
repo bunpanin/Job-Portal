@@ -6,6 +6,6 @@ import lombok.Builder;
 @Builder
 public record CreateRoleRequest(
         @NotBlank(message = "Name is required!")
-        String nane
+        String name
 ) {
 }

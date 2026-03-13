@@ -4,9 +4,12 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import job_portal.domain.backend.Permission;
 import job_portal.domain.backend.UserRole;
 import job_portal.feature.permission.dto.respone.PermissionRespone;
 import job_portal.feature.seeker.auth.dto.request.SeekerUpdateRequest;
@@ -127,6 +130,7 @@ public class SeekerServiceImpl implements SeekerService {
             .subject("Access Token")
             .expiresAt(now.plus(30, ChronoUnit.MINUTES))
             .claim("userId", seeker.getId())
+            .claim("seekerUuid", seeker.getUuid())
             .claim("email", seeker.getEmail())
             .claim("scope", scope)
             .build();
@@ -161,9 +165,18 @@ public class SeekerServiceImpl implements SeekerService {
                 .stream()
                 .map(sr -> new RoleRespone(sr.getRole().getName()))
                 .toList();
+        // ======= Normal ===========
+//        List<PermissionRespone> permissionRespones = seeker.getSeekerRoles()
+//                .stream()
+//                .flatMap(userRole -> userRole.getRole().getPermissions().stream())
+//                .map(permission -> new PermissionRespone(permission.getName()))
+//                .toList();
+        // ======= With order by asc ===========
         List<PermissionRespone> permissionRespones = seeker.getSeekerRoles()
                 .stream()
-                .flatMap(userRole -> userRole.getRole().getPermissions().stream())
+                .flatMap(role -> role.getRole().getPermissions().stream())
+                .distinct()
+                .sorted(Comparator.comparing(Permission::getId))
                 .map(permission -> new PermissionRespone(permission.getName()))
                 .toList();
 

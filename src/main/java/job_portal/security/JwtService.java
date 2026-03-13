@@ -6,7 +6,23 @@ import org.springframework.security.core.context.SecurityContextHolder;
 @Service
 public class JwtService {
 
-        public Long extractUserId() {
+
+    public String extractUuid() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null) return null;
+
+        Object principal = authentication.getPrincipal();
+
+        if (!(principal instanceof Jwt jwt)) {
+            return null;
+        }
+        return jwt.getClaim("seekerUuid");
+    }
+
+
+
+    public Long extractUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null) return null;
