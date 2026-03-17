@@ -10,8 +10,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "role_permissions")
 @Entity
+@Table(name = "role_permissions")
 public class RolePermission {
 
     @Id

@@ -37,7 +37,6 @@ public class Permission implements GrantedAuthority {
         return name;
     }
 
-
     @OneToMany(mappedBy = "permission")
     private Set<RolePermission> rolePermissions = new HashSet<>();
 }

@@ -23,13 +23,6 @@ public class EmailVerification {
 
     @OneToOne
     private Company company;
-//    @OneToOne(optional = true)
-//    @JoinColumn(name = "seeker_id")
-//    private Seeker seeker;
-//
-//    @OneToOne(optional = true)
-//    @JoinColumn(name = "company_id")
-//    private Company company;
 
     @Column(nullable = false)
     private LocalTime expiryTime;

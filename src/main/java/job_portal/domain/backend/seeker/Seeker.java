@@ -95,16 +95,8 @@ public class Seeker {
     private Boolean isCredentialsNonExpired;
     private Boolean isDeleted;
 
-//    @ManyToMany(fetch = FetchType.LAZY)
-//    @JoinTable(
-//            name = "user_roles",
-//            joinColumns = @JoinColumn(name = "seeker_id"),
-//            inverseJoinColumns = @JoinColumn(name = "role_id")
-//    )
-//    private Set<Role> roles;
-
-    @OneToMany(mappedBy = "seekerRoles", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "seeker", cascade = CascadeType.ALL)
     private Set<UserRole> seekerRoles = new HashSet<>();
-//    private UserRole seekerRoles;
+
 
 }

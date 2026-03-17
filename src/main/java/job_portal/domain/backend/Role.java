@@ -45,9 +45,8 @@ public class Role{
     @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<RolePermission> rolePermissions = new HashSet<>();
 
-    @OneToMany
+
+    @OneToMany(mappedBy = "role")
     private Set<UserRole> seekerRoles = new HashSet<>();
 
-    @OneToMany
-    private Set<UserRole> adminRoles = new HashSet<>();
 }

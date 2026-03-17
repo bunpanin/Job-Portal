@@ -37,6 +37,6 @@ public class Admin {
     private Boolean isDeleted;
 
 
-    @OneToMany(mappedBy = "seeker", cascade = CascadeType.ALL)
-    private Set<UserRole> seekerRoles = new HashSet<>();
+//    @OneToMany(mappedBy = "adminRoles",cascade = CascadeType.ALL)
+//    private Set<UserRole> adminRoles = new HashSet<>();
 }
