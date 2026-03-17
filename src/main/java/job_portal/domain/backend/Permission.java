@@ -6,6 +6,8 @@ import org.springframework.security.core.GrantedAuthority;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -34,4 +36,8 @@ public class Permission implements GrantedAuthority {
     public String getAuthority() {
         return name;
     }
+
+
+    @OneToMany(mappedBy = "permission")
+    private Set<RolePermission> rolePermissions = new HashSet<>();
 }

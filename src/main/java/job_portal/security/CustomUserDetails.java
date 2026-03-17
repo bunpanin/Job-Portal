@@ -3,6 +3,7 @@ import java.util.*;
 
 import job_portal.domain.backend.Permission;
 import job_portal.domain.backend.Role;
+import job_portal.domain.backend.RolePermission;
 import job_portal.domain.backend.UserRole;
 import job_portal.domain.backend.company.Company;
 import org.springframework.security.core.GrantedAuthority;
@@ -38,7 +39,8 @@ public class CustomUserDetails implements UserDetails {
                 );
 
                 // Add permission authorities
-                for (Permission permission : role.getPermissions()) {
+                for(RolePermission rolePermission : role.getRolePermissions()) {
+                    Permission permission = rolePermission.getPermission();
                     authorities.add(
                             new SimpleGrantedAuthority(permission.getName())
                     );
@@ -48,50 +50,6 @@ public class CustomUserDetails implements UserDetails {
 
         return authorities;
     }
-    
-    
-//    @Override
-//    public Collection<? extends GrantedAuthority> getAuthorities() {
-//
-//        Set<GrantedAuthority> authorities = new HashSet<>();
-//
-//        Set<Role> roles =  new HashSet<>();
-//
-//        if (seeker != null) {
-//            roles = seeker.getRoles();
-//        }
-//
-////        if (company != null) {
-////            roles = company.getRoles();
-////        }
-//
-////    if (admin != null) {
-////        roles = admin.getRoles();
-////    }
-//
-//        for (Role role : roles) {
-//
-//            // Add role authority
-//            authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getName()));
-//
-//            // Add permission authorities
-//            for (Permission permission : role.getPermissions()) {
-//                authorities.add(new SimpleGrantedAuthority(permission.getName()));
-//            }
-//        }
-//
-//        return authorities;
-////        if (seeker != null) {
-////            return seeker.getRoles();
-////        }
-////        if (company != null) {
-////            return company.getRoles();
-////        }
-////         if (admin != null) {
-////             return admin.getRoles();
-////         }
-////        return List.of();
-//    }
 
     @Override
     public String getPassword() {

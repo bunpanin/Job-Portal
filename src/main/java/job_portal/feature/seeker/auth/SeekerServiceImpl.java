@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import job_portal.domain.backend.Permission;
+import job_portal.domain.backend.RolePermission;
 import job_portal.domain.backend.UserRole;
 import job_portal.feature.permission.dto.respone.PermissionRespone;
 import job_portal.feature.seeker.auth.dto.request.SeekerUpdateRequest;
@@ -61,7 +62,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j 
+@Slf4j
 public class SeekerServiceImpl implements SeekerService {
 
 
@@ -172,12 +173,21 @@ public class SeekerServiceImpl implements SeekerService {
 //                .map(permission -> new PermissionRespone(permission.getName()))
 //                .toList();
         // ======= With order by asc ===========
-        List<PermissionRespone> permissionRespones = seeker.getSeekerRoles()
+//        List<PermissionRespone> permissionRespones = seeker.getSeekerRoles()
+//                .stream()
+//                .flatMap(role -> role.getRole().getPermissions().stream())
+//                .distinct()
+//                .sorted(Comparator.comparing(Permission::getId))
+////                .sorted(Comparator.comparing(Permission::getId).reversed()) // reversed == DESC
+//                .map(permission -> new PermissionRespone(permission.getName()))
+//                .toList();
+
+        List<PermissionRespone> permissionResponens = seeker.getSeekerRoles()
                 .stream()
-                .flatMap(role -> role.getRole().getPermissions().stream())
+                .flatMap(role -> role.getRole().getRolePermissions().stream())
                 .distinct()
-                .sorted(Comparator.comparing(Permission::getId))
-                .map(permission -> new PermissionRespone(permission.getName()))
+                .sorted(Comparator.comparing(RolePermission::getId))
+                .map(permission -> new PermissionRespone(permission.getPermission().getName()))
                 .toList();
 
         JobLevel jobLevel = null;
@@ -273,7 +283,7 @@ public class SeekerServiceImpl implements SeekerService {
             .gender(seeker.getGender())
             .profile(seeker.getProfile())
             .roles(roleResponses)
-            .permissions(permissionRespones)
+            .permissions(permissionResponens)
             .dob(seeker.getDob())
             .address(seeker.getAddress())
             .cityOrProvince(seeker.getCityOrProvince())
@@ -420,7 +430,6 @@ public class SeekerServiceImpl implements SeekerService {
         userRole.setCreatedDate(LocalDateTime.now());
         userRole.setSeeker(seeker);
         userRoleReposity.save(userRole);
-
 
         EmailVerification emailVerification = new EmailVerification();
         emailVerification.setVerificationCode(RandomUtil.random6Digits());

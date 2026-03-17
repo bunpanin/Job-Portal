@@ -34,22 +34,20 @@ public class Role{
     private Boolean isDeleted;
     private LocalDate createdAt;
 
-//    @ManyToMany(mappedBy = "roles")
-//    private List<Seeker> seekers;
-//
-//    @ManyToMany(mappedBy = "roles")
-//    private List<Company> companies;
+//    @ManyToMany(fetch = FetchType.EAGER)
+//    @JoinTable(
+//            name = "role_permissions",
+//            joinColumns = @JoinColumn(name = "role_id"),
+//            inverseJoinColumns = @JoinColumn(name = "permission_id")
+//    )
+//    private Set<Permission> permissions;
 
+    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<RolePermission> rolePermissions = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "role_permissions",
-            joinColumns = @JoinColumn(name = "role_id"),
-            inverseJoinColumns = @JoinColumn(name = "permission_id")
-    )
-    private Set<Permission> permissions;
-
-    @OneToMany(mappedBy = "role")
+    @OneToMany
     private Set<UserRole> seekerRoles = new HashSet<>();
-//    private UserRole userRole;
+
+    @OneToMany
+    private Set<UserRole> adminRoles = new HashSet<>();
 }

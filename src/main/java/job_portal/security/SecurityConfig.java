@@ -138,9 +138,33 @@ public class SecurityConfig {
 
         // Use COMPANY user detail service
         http.userDetailsService(companyDetailServiceImpl);
-        http.oauth2ResourceServer(
-            oauth2 -> oauth2.jwt(jwt -> jwt.decoder(jwtDecoder).jwtAuthenticationConverter(jwtAuthenticationConverter()))
+        http.oauth2ResourceServer(oauth2 ->
+                oauth2.jwt(jwt -> jwt.decoder(jwtDecoder).jwtAuthenticationConverter(jwtAuthenticationConverter()))
         );
+        return http.build();
+    }
+
+
+    @Bean
+    @Order(1)
+    public SecurityFilterChain adminChain(HttpSecurity http, JwtDecoder jwtDecoder) throws Exception {
+
+        http.securityMatcher("/api/v1/admin/**");
+
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
+        http.csrf(csrf -> csrf.disable());
+
+        http.sessionManagement(session ->
+                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        );
+
+        // Use SEEKER user detail service
+        http.userDetailsService(seekerDetailServiceImpl);
+
+        http.oauth2ResourceServer(oauth2 ->
+                oauth2.jwt(jwt -> jwt.decoder(jwtDecoder).jwtAuthenticationConverter(jwtAuthenticationConverter()))
+        );
+
         return http.build();
     }
 

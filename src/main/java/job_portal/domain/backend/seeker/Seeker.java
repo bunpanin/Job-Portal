@@ -103,7 +103,7 @@ public class Seeker {
 //    )
 //    private Set<Role> roles;
 
-    @OneToMany(mappedBy = "seeker", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "seekerRoles", cascade = CascadeType.ALL)
     private Set<UserRole> seekerRoles = new HashSet<>();
 //    private UserRole seekerRoles;
 
