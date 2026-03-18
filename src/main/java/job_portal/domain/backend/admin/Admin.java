@@ -36,7 +36,7 @@ public class Admin {
     private LocalDateTime createdAt;
     private Boolean isDeleted;
 
+    @OneToMany(mappedBy = "admin", cascade = CascadeType.ALL)
+    private Set<UserRole> adminRoles = new HashSet<>();
 
-//    @OneToMany(mappedBy = "adminRoles",cascade = CascadeType.ALL)
-//    private Set<UserRole> adminRoles = new HashSet<>();
 }

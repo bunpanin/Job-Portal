@@ -34,19 +34,7 @@ public class Role{
     private Boolean isDeleted;
     private LocalDate createdAt;
 
-//    @ManyToMany(fetch = FetchType.EAGER)
-//    @JoinTable(
-//            name = "role_permissions",
-//            joinColumns = @JoinColumn(name = "role_id"),
-//            inverseJoinColumns = @JoinColumn(name = "permission_id")
-//    )
-//    private Set<Permission> permissions;
 
     @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<RolePermission> rolePermissions = new HashSet<>();
-
-
-    @OneToMany(mappedBy = "role")
-    private Set<UserRole> seekerRoles = new HashSet<>();
-
 }
