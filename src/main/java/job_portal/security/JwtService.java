@@ -45,7 +45,6 @@ public class JwtService {
         if (!(principal instanceof Jwt jwt)) {
             return null;
         }
-
         return jwt.getClaim("email"); // or your claim name
     }
     
