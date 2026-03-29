@@ -1,9 +1,12 @@
-package job_portal.feature.Seeker.Auth.dto.respone;
+package job_portal.feature.seeker.Auth.dto.respone;
 
+import job_portal.feature.admin.Permission.dto.respone.PermissionRespone;
+import job_portal.feature.admin.Role.dto.respone.RoleRespone;
 import lombok.Builder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Builder
 public record DataRespone(
@@ -18,6 +21,9 @@ public record DataRespone(
         String address,
         String cityOrProvince,
         String country,
+
+        List<RoleRespone> roles,
+        List<PermissionRespone> permissions,
 
         String githubAccount,
         String linkInAccount,

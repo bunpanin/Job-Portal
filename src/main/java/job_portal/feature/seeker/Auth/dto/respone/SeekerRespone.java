@@ -1,4 +1,4 @@
-package job_portal.feature.Seeker.Auth.dto.respone;
+package job_portal.feature.seeker.Auth.dto.respone;
 import lombok.Builder;
 
 @Builder

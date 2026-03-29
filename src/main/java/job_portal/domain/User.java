@@ -27,18 +27,18 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    private Boolean isVerified = false;
-    private Boolean isBlocked = false;
-    private Boolean isAccountNonExpired = true;
-    private Boolean isAccountNonLocked = true;
-    private Boolean isCredentialsNonExpired = true;
-    private Boolean isDeleted = false;
+    private Boolean isVerified;
+    private Boolean isBlocked;
+    private Boolean isAccountNonExpired;
+    private Boolean isAccountNonLocked;
+    private Boolean isCredentialsNonExpired;
+    private Boolean isDeleted;
 
     private LocalDateTime createdAt;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Seeker seeker;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private Set<UserRole> userRoles = new HashSet<>();
 }

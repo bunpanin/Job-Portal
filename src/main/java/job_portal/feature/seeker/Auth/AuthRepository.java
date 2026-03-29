@@ -1,4 +1,4 @@
-package job_portal.feature.Seeker.Auth;
+package job_portal.feature.seeker.Auth;
 
 import job_portal.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;

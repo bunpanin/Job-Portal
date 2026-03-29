@@ -1,4 +1,4 @@
-package job_portal.feature.Seeker.Auth.dto.request;
+package job_portal.feature.seeker.Auth.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

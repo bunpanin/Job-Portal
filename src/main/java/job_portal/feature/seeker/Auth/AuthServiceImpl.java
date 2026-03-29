@@ -1,18 +1,23 @@
-package job_portal.feature.Seeker.Auth;
+package job_portal.feature.seeker.Auth;
 import jakarta.mail.MessagingException;
 import job_portal.domain.Role;
 import job_portal.domain.Seeker;
 import job_portal.domain.User;
-import job_portal.domain.UserRole;
 import job_portal.feature.EmailVerifycaionRepository;
-import job_portal.feature.Seeker.Auth.dto.request.LoginRequest;
-import job_portal.feature.Seeker.Auth.dto.request.RegisterRequest;
-import job_portal.feature.Seeker.Auth.dto.respone.DataRespone;
-import job_portal.feature.Seeker.Auth.dto.respone.JwtRespone;
-import job_portal.feature.Seeker.Auth.dto.respone.SeekerRespone;
-import job_portal.feature.Seeker.SeekerRepository;
+import job_portal.feature.admin.Permission.dto.respone.PermissionRespone;
+import job_portal.feature.admin.Role.dto.respone.RoleRespone;
+import job_portal.feature.seeker.Auth.dto.request.LoginRequest;
+import job_portal.feature.seeker.Auth.dto.request.RegisterRequest;
+import job_portal.feature.seeker.Auth.dto.request.UpdateRequest;
+import job_portal.feature.seeker.Auth.dto.respone.DataRespone;
+import job_portal.feature.seeker.Auth.dto.respone.JwtRespone;
+import job_portal.feature.seeker.Auth.dto.respone.SeekerRespone;
+import job_portal.feature.seeker.SeekerRepository;
 import job_portal.feature.admin.Role.RoleRepository;
 import job_portal.feature.user.UserRepository;
+import job_portal.mapper.SeekerMapper;
+import job_portal.security.JwtService;
+import job_portal.util.GlobalUtil;
 import job_portal.util.UserTypeEnum;
 import job_portal.util.UuidUtil;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,9 +35,7 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -55,6 +57,8 @@ public class AuthServiceImpl implements AuthService {
     private final JwtEncoder jwtEncoder;
     private JwtEncoder jwtEncoderRefreshToken;
     private final String TOKEN_TYPE = "Bearer";
+    private final JwtService jwtService;
+    private final SeekerMapper seekerMapper;
 
 
     @Autowired
@@ -65,9 +69,43 @@ public class AuthServiceImpl implements AuthService {
 
 
     @Override
+    public void updateSeekerByUuid(UpdateRequest update) {
+        String uuid = jwtService.extractUuid();
+        User user = userRepository.findByUuid(uuid).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Seeker not found")
+        );
+
+        seekerMapper.updateUserFromDto(update, user);
+
+        if (user.getSeeker() != null) {
+            seekerMapper.updateSeekerFromDto(update, user.getSeeker());
+        }
+        userRepository.save(user);
+    }
+
+    @Override
     public SeekerRespone login(LoginRequest login) {
-        Authentication auth = new UsernamePasswordAuthenticationToken(login.email(), login.password());
-        auth = authProvider.authenticate(auth);
+
+        User user = userRepository.findByEmail(login.email()).orElseThrow(
+                ()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Seeker not found")
+        );
+        Authentication auth;
+
+        try {
+            auth = new UsernamePasswordAuthenticationToken(login.email(), login.password());
+            auth = authProvider.authenticate(auth);
+
+        } catch (DisabledException e) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "Account not verified. Please verify your email."
+            );
+        } catch (LockedException e) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "Account is locked."
+            );
+        }
 
         log.info("Authorities: {}", auth.getAuthorities());
         String scope = auth.getAuthorities()
@@ -75,11 +113,8 @@ public class AuthServiceImpl implements AuthService {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(" "));
         log.info("SCOPE: {}", scope);
-
         Instant now = Instant.now();
-        User user = userRepository.findByEmail(login.email()).orElseThrow(
-                ()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
-        );
+
 
         // Create access token claims set
         JwtClaimsSet jwtClaimsSet = JwtClaimsSet.builder()
@@ -120,6 +155,16 @@ public class AuthServiceImpl implements AuthService {
                 .refreshToken(refreshToken)
                 .build();
 
+        List<RoleRespone> roles = user.getUserRoles().stream().map(
+                r -> new RoleRespone(r.getRole().getName())
+        ).toList();
+
+        List<PermissionRespone> permissions = user.getUserRoles()
+                .stream()
+                .flatMap(role -> role.getRole().getRolePermissions().stream())
+                .distinct()
+                .map(permission -> new PermissionRespone(permission.getPermission().getName()))
+                .toList();
         DataRespone data = DataRespone.builder()
                 .uuid(user.getUuid())
                 .fullName(user.getSeeker().getFullName())
@@ -131,6 +176,8 @@ public class AuthServiceImpl implements AuthService {
                 .address(user.getSeeker().getAddress())
                 .cityOrProvince(user.getSeeker().getCityOrProvince())
                 .country(user.getSeeker().getCountry())
+                .roles(roles)
+                .permissions(permissions)
                 .githubAccount(user.getSeeker().getGithubAccount())
                 .linkInAccount(user.getSeeker().getLinkedinAccount())
                 .portfolio(user.getSeeker().getPortfolio())
@@ -167,11 +214,19 @@ public class AuthServiceImpl implements AuthService {
             );
         }
         // 3. Create User
-        User user = new User();
-        user.setUuid(UuidUtil.generateUuid(request.fullName()));
-        user.setEmail(request.email());
-        user.setPassword(passwordEncoder.encode(request.password()));
-        user.setCreatedAt(LocalDateTime.now());
+        User user = User.builder()
+            .uuid(UuidUtil.generateUuid(request.fullName()))
+            .email(request.email())
+            .password(passwordEncoder.encode(request.password()))
+            .createdAt(LocalDateTime.now())
+                .isVerified(false)
+                .isBlocked(false)
+                .isAccountNonExpired(true)
+                .isAccountNonLocked(true)
+                .isCredentialsNonExpired(true)
+                .isDeleted(false)
+            .build();
+
 
         // 4. Get SEEKER role
         Role seekerRole = roleRepository.findByName(UserTypeEnum.SEEKER.toString())
@@ -179,19 +234,21 @@ public class AuthServiceImpl implements AuthService {
                     HttpStatus.NOT_FOUND,
                     "Role SEEKER not found"
             ));
+        Role adminRole = roleRepository.findByName(UserTypeEnum.ADMIN.toString())
+            .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "Role ADMIN not found"
+            ));
 
-        // 5. Create UserRole
-        UserRole userRole = new UserRole();
-        userRole.setUser(user);
-        userRole.setRole(seekerRole);
-        user.getUserRoles().add(userRole);
-        // 6. Save User (cascade will save UserRole)
+        GlobalUtil.addRoleToUser(user, seekerRole);
+        GlobalUtil.addRoleToUser(user, adminRole);
+
         userRepository.save(user);
 
-        // 7. Create Seeker profile
-        Seeker seeker = new Seeker();
-        seeker.setFullName(request.fullName());
-        seeker.setUser(user);// optional
+        Seeker seeker = Seeker.builder()
+            .fullName(request.fullName())
+            .user(user)
+            .build();
 
         seekerRepository.save(seeker);
     }

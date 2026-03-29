@@ -61,17 +61,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain userChain(HttpSecurity http, JwtDecoder jwtDecoder) throws Exception {
 
-        http.securityMatcher("/api/v1/seeker/**");
-        http.securityMatcher("/api/v1/admin/**");
-        http.securityMatcher("/api/v1/company/**");
-//        http.authorizeHttpRequests(
-//                auth -> auth
-//            // EXAMPLE ROLE/PERMISSION
-//            .requestMatchers("/api/v1/admin/**").hasAuthority("ROLE_ADMIN")
-//            .requestMatchers("/api/v1/company/**").hasAnyAuthority("ROLE_COMPANY", "ROLE_ADMIN")
-//            // ALL OTHER REQUESTS
-//            .anyRequest().authenticated()
-//        );
+//        http.securityMatcher("/api/v1/seeker/**");
+//        http.securityMatcher("/api/v1/admin/**");
+//        http.securityMatcher("/api/v1/company/**");
+        http.securityMatcher(
+                "/api/v1/seeker/**",
+                "/api/v1/admin/**",
+                "/api/v1/company/**"
+        );
 
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
         http.csrf(AbstractHttpConfigurer::disable);

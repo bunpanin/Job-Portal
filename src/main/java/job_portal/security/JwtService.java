@@ -17,7 +17,7 @@ public class JwtService {
         if (!(principal instanceof Jwt jwt)) {
             return null;
         }
-        return jwt.getClaim("seekerUuid");
+        return jwt.getClaim("uuidSeeker");
     }
 
 
