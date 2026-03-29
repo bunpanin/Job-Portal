@@ -59,6 +59,7 @@ public class AuthServiceImpl implements AuthService {
     private final String TOKEN_TYPE = "Bearer";
     private final JwtService jwtService;
     private final SeekerMapper seekerMapper;
+    private final TokenBlacklistService tokenBlacklistService;
 
 
     @Autowired
@@ -67,6 +68,13 @@ public class AuthServiceImpl implements AuthService {
         this.jwtEncoderRefreshToken = jwtEncoderRefreshToken;
     }
 
+
+    @Override
+    public void logout(Authentication authentication) {
+        Jwt jwt = (Jwt) authentication.getPrincipal();
+        String uuidSeeker = jwt.getClaim("uuidSeeker");
+        tokenBlacklistService.blacklistUser(uuidSeeker);
+    }
 
     @Override
     public void updateSeekerByUuid(UpdateRequest update) {
